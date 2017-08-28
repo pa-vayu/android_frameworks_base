@@ -6005,6 +6005,11 @@ public final class Settings {
          */
         public static final String GESTURE_DOUBLE_TAP_SLEEP = "gesture_double_tap_sleep";
 
+	/**
+         * @hide
+         */
+        public static final String GLOBAL_ACTIONS_LIST = "global_actions_list";
+
         /**
          * Whether allowing pocket service to register sensors and dispatch informations.
          *   0 = disabled
@@ -11202,6 +11207,11 @@ public final class Settings {
          */
         @Readable
         public static final String NOTIFICATION_DISMISS_RTL = "notification_dismiss_rtl";
+
+        /**
+         * @hide
+         */
+        public static final String ADVANCED_REBOOT = "advanced_reboot";
 
         /**
          * Comma separated list of QS tiles that have been auto-added already.

@@ -39,4 +39,12 @@
     <string name="pocket_mode_instruction_step1">1. Ensure the green area (proximity sensor) shown above is unobstructed and free from dirt or dust.</string>
     <string name="pocket_mode_instruction_step2">2. Press and hold the power button to exit pocket mode.</string>
 
+    <!-- Global actions -->
+    <string name="reboot_to_bootloader_title">Reboot bootloader</string>
+    <string name="reboot_to_bootloader_message">Rebooting to bootloader\u2026</string>
+    <string name="reboot_to_recovery_title">Reboot recovery</string>
+    <string name="reboot_to_recovery_message">Rebooting to recovery\u2026</string>
+    <string name="reboot_system_title">Restart system</string>
+    <string name="reboot_system_message">Restarting system\u2026</string>
+
 </resources>
