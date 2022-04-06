@@ -22,6 +22,7 @@ import static com.android.server.wm.RemoteAnimationAdapterWrapperProto.TARGET;
 import static com.android.server.wm.WindowManagerDebugConfig.TAG_WITH_CLASS_NAME;
 import static com.android.server.wm.WindowManagerDebugConfig.TAG_WM;
 
+import android.annotation.ColorInt;
 import android.annotation.NonNull;
 import android.annotation.Nullable;
 import android.graphics.Point;
@@ -433,6 +434,7 @@ class RemoteAnimationController implements DeathRecipient {
         final WindowContainer mWindowContainer;
         final Rect mStartBounds;
         final boolean mShowBackdrop;
+        @ColorInt int mBackdropColor = 0;
         private @RemoteAnimationTarget.Mode int mMode = RemoteAnimationTarget.MODE_CHANGING;
 
         RemoteAnimationRecord(WindowContainer windowContainer, Point endPos, Rect localBounds,
@@ -456,6 +458,10 @@ class RemoteAnimationController implements DeathRecipient {
                         new Rect(), mShowBackdrop);
                 mStartBounds = null;
             }
+        }
+
+        void setBackDropColor(@ColorInt int backdropColor) {
+            mBackdropColor = backdropColor;
         }
 
         RemoteAnimationTarget createRemoteAnimationTarget() {
@@ -509,6 +515,12 @@ class RemoteAnimationController implements DeathRecipient {
             mEndBounds.set(endBounds);
             mStartBounds.set(startBounds);
             mShowBackdrop = showBackdrop;
+        }
+
+        @Override
+        @ColorInt
+        public int getBackgroundColor() {
+            return mRecord.mBackdropColor;
         }
 
         @Override
