@@ -9872,6 +9872,7 @@ public final class ActivityRecord extends WindowToken implements WindowManagerSe
                 false /*isNotInRecents*/,
                 record.mThumbnailAdapter != null ? record.mThumbnailAdapter.mCapturedLeash : null,
                 record.mStartBounds, task.getTaskInfo(), checkEnterPictureInPictureAppOpsState());
+        target.setShowBackdrop(record.mShowBackdrop);
         target.hasAnimatingParent = record.hasAnimatingParent();
         return target;
     }
