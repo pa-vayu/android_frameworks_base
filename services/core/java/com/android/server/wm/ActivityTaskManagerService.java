@@ -64,7 +64,6 @@ import static android.provider.Settings.Global.HIDE_ERROR_DIALOGS;
 import static android.provider.Settings.System.FONT_SCALE;
 import static android.view.Display.DEFAULT_DISPLAY;
 import static android.view.Display.INVALID_DISPLAY;
-import static android.view.WindowManager.TRANSIT_WAKE;
 import static android.view.WindowManagerPolicyConstants.KEYGUARD_GOING_AWAY_FLAG_TO_LAUNCHER_CLEAR_SNAPSHOT;
 
 import static com.android.internal.protolog.ProtoLogGroup.WM_DEBUG_CONFIGURATION;
@@ -6674,15 +6673,6 @@ public class ActivityTaskManagerService extends IActivityTaskManager.Stub {
                 String callingPackage) {
             return ActivityTaskManagerService.this.hasSystemAlertWindowPermission(callingUid,
                     callingPid, callingPackage);
-        }
-
-        @Override
-        public void notifyWakingUp() {
-            synchronized (mGlobalLock) {
-                // Start a transition for waking. This is needed for showWhenLocked activities.
-                getTransitionController().requestTransitionIfNeeded(TRANSIT_WAKE, 0 /* flags */,
-                        null /* trigger */, mRootWindowContainer.getDefaultDisplay());
-            }
         }
 
         @Override
