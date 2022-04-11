@@ -5661,7 +5661,10 @@ public final class ActivityRecord extends WindowToken implements WindowManagerSe
                 wasStopped, this);
         mAppStopped = false;
         // Allow the window to turn the screen on once the app is resumed again.
-        setCurrentLaunchCanTurnScreenOn(true);
+        if (mAtmService.getActivityStartController().isInExecution()) {
+            setCurrentLaunchCanTurnScreenOn(true);
+        }
+
         if (!wasStopped) {
             destroySurfaces(true /*cleanupOnResume*/);
         }

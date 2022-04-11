@@ -651,6 +651,8 @@ class ActivityStarter {
      */
     int execute() {
         try {
+            onExecutionStarted();
+
             // Refuse possible leaked file descriptors
             if (mRequest.intent != null && mRequest.intent.hasFileDescriptors()) {
                 throw new IllegalArgumentException("File descriptors passed in Intent");
@@ -1263,6 +1265,10 @@ class ActivityStarter {
      */
     private void onExecutionComplete() {
         mController.onExecutionComplete(this);
+    }
+
+    private void onExecutionStarted() {
+        mController.onExecutionStarted(this);
     }
 
     private boolean isHomeApp(int uid, @Nullable String packageName) {
