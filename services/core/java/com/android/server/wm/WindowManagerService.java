@@ -1072,7 +1072,6 @@ public class WindowManagerService extends IWindowManager.Stub
 
     Function<SurfaceSession, SurfaceControl.Builder> mSurfaceControlFactory;
     Supplier<SurfaceControl.Transaction> mTransactionFactory;
-    final Supplier<Surface> mSurfaceFactory;
 
     private final SurfaceControl.Transaction mTransaction;
 
@@ -1155,7 +1154,7 @@ public class WindowManagerService extends IWindowManager.Stub
             final boolean showBootMsgs, final boolean onlyCore, WindowManagerPolicy policy,
             ActivityTaskManagerService atm) {
         return main(context, im, showBootMsgs, onlyCore, policy, atm,
-                new DisplayWindowSettingsProvider(), SurfaceControl.Transaction::new, Surface::new,
+                new DisplayWindowSettingsProvider(), SurfaceControl.Transaction::new,
                 SurfaceControl.Builder::new);
     }
 
@@ -1168,12 +1167,11 @@ public class WindowManagerService extends IWindowManager.Stub
             final boolean showBootMsgs, final boolean onlyCore, WindowManagerPolicy policy,
             ActivityTaskManagerService atm, DisplayWindowSettingsProvider
             displayWindowSettingsProvider, Supplier<SurfaceControl.Transaction> transactionFactory,
-            Supplier<Surface> surfaceFactory,
             Function<SurfaceSession, SurfaceControl.Builder> surfaceControlFactory) {
         final WindowManagerService[] wms = new WindowManagerService[1];
         DisplayThread.getHandler().runWithScissors(() ->
                 wms[0] = new WindowManagerService(context, im, showBootMsgs, onlyCore, policy,
-                        atm, displayWindowSettingsProvider, transactionFactory, surfaceFactory,
+                        atm, displayWindowSettingsProvider, transactionFactory,
                         surfaceControlFactory), 0);
         return wms[0];
     }
@@ -1198,7 +1196,6 @@ public class WindowManagerService extends IWindowManager.Stub
             boolean showBootMsgs, boolean onlyCore, WindowManagerPolicy policy,
             ActivityTaskManagerService atm, DisplayWindowSettingsProvider
             displayWindowSettingsProvider, Supplier<SurfaceControl.Transaction> transactionFactory,
-            Supplier<Surface> surfaceFactory,
             Function<SurfaceSession, SurfaceControl.Builder> surfaceControlFactory) {
         installLock(this, INDEX_WINDOW);
         mGlobalLock = atm.getGlobalLock();
@@ -1238,7 +1235,6 @@ public class WindowManagerService extends IWindowManager.Stub
 
         mSurfaceControlFactory = surfaceControlFactory;
         mTransactionFactory = transactionFactory;
-        mSurfaceFactory = surfaceFactory;
         mTransaction = mTransactionFactory.get();
 
         mPolicy = policy;
