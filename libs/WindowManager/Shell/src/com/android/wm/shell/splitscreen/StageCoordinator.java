@@ -1204,6 +1204,9 @@ public class StageCoordinator implements SplitLayout.SplitLayoutHandler,
         final int dismissTop = mainStageToTop ? STAGE_TYPE_MAIN : STAGE_TYPE_SIDE;
         final WindowContainerTransaction wct = new WindowContainerTransaction();
         prepareExitSplitScreen(dismissTop, wct);
+        if (mRootTaskInfo != null) {
+            wct.setDoNotPip(mRootTaskInfo.token);
+        }
         mSplitTransitions.startDismissTransition(wct, this, dismissTop, EXIT_REASON_DRAG_DIVIDER);
     }
 
@@ -1588,7 +1591,8 @@ public class StageCoordinator implements SplitLayout.SplitLayoutHandler,
         if (!shouldAnimate) return false;
 
         mSplitTransitions.playAnimation(transition, info, startTransaction, finishTransaction,
-                finishCallback, mMainStage.mRootTaskInfo.token, mSideStage.mRootTaskInfo.token);
+                finishCallback, mMainStage.mRootTaskInfo.token, mSideStage.mRootTaskInfo.token,
+                mRootTaskInfo.token);
         return true;
     }
 
