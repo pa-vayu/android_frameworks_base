@@ -616,11 +616,6 @@ class WindowState extends WindowContainer<WindowState> implements WindowManagerP
     int mLastVisibleLayoutRotation = -1;
 
     /**
-     * Set when we need to report the orientation change to client to trigger a relayout.
-     */
-    boolean mReportOrientationChanged;
-
-    /**
      * How long we last kept the screen frozen.
      */
     int mLastFreezeDuration;
@@ -1543,13 +1538,11 @@ class WindowState extends WindowContainer<WindowState> implements WindowManagerP
                 || configChanged
                 || insetsChanged
                 || dragResizingChanged
-                || mReportOrientationChanged
                 || shouldSendRedrawForSync()) {
             ProtoLog.v(WM_DEBUG_RESIZE,
-                        "Resize reasons for w=%s:  %s configChanged=%b "
-                                + "dragResizingChanged=%b reportOrientationChanged=%b",
+                        "Resize reasons for w=%s:  %s configChanged=%b dragResizingChanged=%b",
                         this, mWindowFrames.getInsetsChangedInfo(),
-                        configChanged, dragResizingChanged, mReportOrientationChanged);
+                        configChanged, dragResizingChanged);
 
             if (insetsChanged) {
                 mWindowFrames.setInsetsChanged(false);
@@ -3579,10 +3572,6 @@ class WindowState extends WindowContainer<WindowState> implements WindowManagerP
         mAnimatingExit = false;
         ProtoLog.d(WM_DEBUG_ANIM, "Clear animatingExit: reason=destroySurface win=%s", this);
 
-        // Clear the flag so the buffer requested for the next new surface won't be dropped by
-        // mistaking the surface size needs to update.
-        mReportOrientationChanged = false;
-
         if (useBLASTSync()) {
             immediatelyNotifyBlastSync();
         }
@@ -3899,12 +3888,10 @@ class WindowState extends WindowContainer<WindowState> implements WindowManagerP
             ProtoLog.i(WM_DEBUG_ORIENTATION, "Resizing %s WITH DRAW PENDING", this);
         }
 
-        final boolean reportOrientation = mReportOrientationChanged;
         // Always reset these states first, so if {@link IWindow#resized} fails, this
         // window won't be added to {@link WindowManagerService#mResizingWindows} and set
         // {@link #mOrientationChanging} to true again by {@link #updateResizingWindowIfNeeded}
         // that may cause WINDOW_FREEZE_TIMEOUT because resizing the client keeps failing.
-        mReportOrientationChanged = false;
         mDragResizingChangeReported = true;
         mWindowFrames.clearReportResizeHints();
 
@@ -3913,7 +3900,7 @@ class WindowState extends WindowContainer<WindowState> implements WindowManagerP
         final boolean syncRedraw = shouldSendRedrawForSync();
         final boolean reportDraw = syncRedraw || drawPending;
         final boolean isDragResizeChanged = isDragResizeChanged();
-        final boolean forceRelayout = syncRedraw || reportOrientation || isDragResizeChanged;
+        final boolean forceRelayout = syncRedraw || isDragResizeChanged;
         final DisplayContent displayContent = getDisplayContent();
         final boolean alwaysConsumeSystemBars =
                 displayContent.getDisplayPolicy().areSystemBarsForcedShownLw();
@@ -3940,7 +3927,7 @@ class WindowState extends WindowContainer<WindowState> implements WindowManagerP
             mClient.resized(mClientWindowFrames, reportDraw, mLastReportedConfiguration,
                     getCompatInsetsState(), forceRelayout, alwaysConsumeSystemBars, displayId,
                     mSyncSeqId, resizeMode);
-            if (drawPending && reportOrientation && mOrientationChanging) {
+            if (drawPending && mOrientationChanging) {
                 mOrientationChangeRedrawRequestTime = SystemClock.elapsedRealtime();
                 ProtoLog.v(WM_DEBUG_ORIENTATION,
                         "Requested redraw for orientation change: %s", this);
@@ -4365,12 +4352,11 @@ class WindowState extends WindowContainer<WindowState> implements WindowManagerP
                     + " mDestroying=" + mDestroying
                     + " mRemoved=" + mRemoved);
         }
-        if (getOrientationChanging() || mAppFreezing || mReportOrientationChanged) {
+        if (getOrientationChanging() || mAppFreezing) {
             pw.println(prefix + "mOrientationChanging=" + mOrientationChanging
                     + " configOrientationChanging="
                     + (getLastReportedConfiguration().orientation != getConfiguration().orientation)
-                    + " mAppFreezing=" + mAppFreezing
-                    + " mReportOrientationChanged=" + mReportOrientationChanged);
+                    + " mAppFreezing=" + mAppFreezing);
         }
         if (mLastFreezeDuration != 0) {
             pw.print(prefix + "mLastFreezeDuration=");

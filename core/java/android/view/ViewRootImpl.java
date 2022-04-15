@@ -2914,7 +2914,6 @@ public final class ViewRootImpl implements ViewParent,
         final int surfaceGenerationId = mSurface.getGenerationId();
 
         final boolean isViewVisible = viewVisibility == View.VISIBLE;
-        final boolean windowRelayoutWasForced = mForceNextWindowRelayout;
         boolean surfaceSizeChanged = false;
         boolean surfaceCreated = false;
         boolean surfaceDestroyed = false;
@@ -3096,8 +3095,7 @@ public final class ViewRootImpl implements ViewParent,
                     if (isHardwareEnabled()) {
                         mAttachInfo.mThreadedRenderer.destroy();
                     }
-                } else if ((surfaceReplaced
-                        || surfaceSizeChanged || windowRelayoutWasForced)
+                } else if ((surfaceReplaced || surfaceSizeChanged)
                         && mSurfaceHolder == null
                         && mAttachInfo.mThreadedRenderer != null
                         && mSurface.isValid()) {

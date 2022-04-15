@@ -2015,7 +2015,6 @@ class DisplayContent extends RootDisplayArea implements WindowManagerPolicy.Disp
                 ProtoLog.v(WM_DEBUG_ORIENTATION, "Set mOrientationChanging of %s", w);
                 w.setOrientationChanging(true);
             }
-            w.mReportOrientationChanged = true;
         }, true /* traverseTopToBottom */);
 
         for (int i = mWmService.mRotationWatchers.size() - 1; i >= 0; i--) {
