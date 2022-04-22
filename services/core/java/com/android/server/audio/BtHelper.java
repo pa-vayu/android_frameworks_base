@@ -55,6 +55,8 @@ public class BtHelper {
 
     private static final String TAG = "AS.BtHelper";
 
+    private static final int SOURCE_CODEC_TYPE_OPUS = 9; // TODO remove in U
+
     private final @NonNull AudioDeviceBroker mDeviceBroker;
 
     BtHelper(@NonNull AudioDeviceBroker broker) {
@@ -1186,6 +1188,8 @@ public class BtHelper {
                 return "ENCODING_APTX_HD";
             case BluetoothCodecConfig.SOURCE_CODEC_TYPE_LDAC:
                 return "ENCODING_LDAC";
+            case SOURCE_CODEC_TYPE_OPUS: // TODO update in U
+                return "ENCODING_OPUS";
             default:
                 return "ENCODING_BT_CODEC_TYPE(" + btCodecType + ")";
         }
