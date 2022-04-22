@@ -422,6 +422,27 @@ public class BouncerSwipeTouchHandlerTest extends SysuiTestCase {
         verify(mUiEventLogger).log(BouncerSwipeTouchHandler.DreamEvent.DREAM_BOUNCER_FULLY_VISIBLE);
     }
 
+    /**
+     * Ensures {@link CentralSurfaces}
+     */
+    @Test
+    public void testInformBouncerShowingOnExpand() {
+        swipeToPosition(1f, Direction.UP, 0);
+    }
+
+    /**
+     * Ensures {@link CentralSurfaces}
+     */
+    @Test
+    public void testInformBouncerHidingOnCollapse() {
+        // Must swipe up to set initial state.
+        swipeToPosition(1f, Direction.UP, 0);
+        Mockito.clearInvocations(mCentralSurfaces);
+
+        swipeToPosition(0f, Direction.DOWN, 0);
+    }
+
+
     private void swipeToPosition(float percent, Direction direction, float velocityY) {
         mTouchHandler.onSessionStart(mTouchSession);
         ArgumentCaptor<GestureDetector.OnGestureListener> gestureListenerCaptor =
