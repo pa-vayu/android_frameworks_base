@@ -78,6 +78,7 @@ public class BrightnessMirrorController
         mVisibilityCallback = visibilityCallback;
         mIcon = (ImageView) mBrightnessMirror.findViewById(R.id.brightness_icon);
         mIcon.setVisibility(View.VISIBLE);
+        updateResources();
     }
 
     public void showMirror() {
