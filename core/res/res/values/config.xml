@@ -5842,4 +5842,7 @@
     <!-- Maximum time in millisecs for telephony should wait to deactivate data call
          when user turned off mobile data or data roaming during CIWLAN -->
     <integer name="config_maximumDelayTimeToDeactivateDataCall">7000</integer>
+
+    <!-- Whether the wake screen on notifications feature is available. -->
+    <bool name="config_pulseOnNotificationsAvailable">true</bool>
 </resources>
