@@ -1313,11 +1313,9 @@ public class DisplayPolicy {
                         (displayFrames, windowContainer, inOutFrame) -> {
                             if (!mNavButtonForcedVisible) {
                                 final LayoutParams lp =
-                                        win.getLayoutingAttrs(displayFrames.mRotation);
+                                        win.mAttrs.forRotation(displayFrames.mRotation);
                                 if (lp.providedInsets != null) {
-                                    for (InsetsFrameProvider provider :
-                                            win.getLayoutingAttrs(displayFrames.mRotation)
-                                                    .providedInsets) {
+                                    for (InsetsFrameProvider provider : lp.providedInsets) {
                                         if (provider.type != ITYPE_NAVIGATION_BAR) {
                                             continue;
                                         }
@@ -1526,7 +1524,7 @@ public class DisplayPolicy {
     private int getStatusBarHeight(DisplayFrames displayFrames) {
         int statusBarHeight;
         if (mStatusBar != null) {
-            statusBarHeight = mStatusBar.getLayoutingAttrs(displayFrames.mRotation).height;
+            statusBarHeight = mStatusBar.mAttrs.forRotation(displayFrames.mRotation).height;
         } else {
             statusBarHeight = 0;
         }
@@ -1682,7 +1680,7 @@ public class DisplayPolicy {
         final InsetsStateController controller = mDisplayContent.getInsetsStateController();
         for (int i = mInsetsSourceWindowsExceptIme.size() - 1; i >= 0; i--) {
             final WindowState win = mInsetsSourceWindowsExceptIme.valueAt(i);
-            mWindowLayout.computeFrames(win.getLayoutingAttrs(displayFrames.mRotation),
+            mWindowLayout.computeFrames(win.mAttrs.forRotation(displayFrames.mRotation),
                     displayFrames.mInsetsState, displayFrames.mDisplayCutoutSafe,
                     displayFrames.mUnrestricted, win.getWindowingMode(), UNSPECIFIED_LENGTH,
                     UNSPECIFIED_LENGTH, win.getRequestedVisibilities(),
@@ -1700,7 +1698,7 @@ public class DisplayPolicy {
     void updateInsetsSourceFramesExceptIme(DisplayFrames displayFrames) {
         for (int i = mInsetsSourceWindowsExceptIme.size() - 1; i >= 0; i--) {
             final WindowState win = mInsetsSourceWindowsExceptIme.valueAt(i);
-            mWindowLayout.computeFrames(win.getLayoutingAttrs(displayFrames.mRotation),
+            mWindowLayout.computeFrames(win.mAttrs.forRotation(displayFrames.mRotation),
                     displayFrames.mInsetsState, displayFrames.mDisplayCutoutSafe,
                     displayFrames.mUnrestricted, win.getWindowingMode(), UNSPECIFIED_LENGTH,
                     UNSPECIFIED_LENGTH, win.getRequestedVisibilities(),
@@ -1733,7 +1731,7 @@ public class DisplayPolicy {
         // We invoke this to get the proper DisplayFrames.
         displayFrames = win.getDisplayFrames(displayFrames);
 
-        final WindowManager.LayoutParams attrs = win.getLayoutingAttrs(displayFrames.mRotation);
+        final WindowManager.LayoutParams attrs = win.mAttrs.forRotation(displayFrames.mRotation);
         final Rect attachedWindowFrame = attached != null ? attached.getFrame() : null;
 
         // If this window has different LayoutParams for rotations, we cannot trust its requested
@@ -2196,7 +2194,7 @@ public class DisplayPolicy {
         if (mNavigationBar == null) {
             return 0;
         }
-        LayoutParams lp = mNavigationBar.getLayoutingAttrs(rotation);
+        LayoutParams lp = mNavigationBar.mAttrs.forRotation(rotation);
         Insets providedInsetsSize = null;
         if (lp.providedInsets != null) {
             for (InsetsFrameProvider provider : lp.providedInsets) {
@@ -2228,7 +2226,7 @@ public class DisplayPolicy {
         if (mNavigationBar == null) {
             return 0;
         }
-        return mNavigationBar.getLayoutingAttrs(rotation).height;
+        return mNavigationBar.mAttrs.forRotation(rotation).height;
     }
 
     /**
@@ -2357,7 +2355,7 @@ public class DisplayPolicy {
     @NavigationBarPosition
     int navigationBarPosition(int displayRotation) {
         if (mNavigationBar != null) {
-            final int gravity = mNavigationBar.getLayoutingAttrs(displayRotation).gravity;
+            final int gravity = mNavigationBar.mAttrs.forRotation(displayRotation).gravity;
             switch (gravity) {
                 case Gravity.LEFT:
                     return NAV_BAR_LEFT;
