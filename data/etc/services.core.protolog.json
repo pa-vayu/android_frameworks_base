@@ -163,6 +163,12 @@
       "group": "WM_ERROR",
       "at": "com\/android\/server\/wm\/WindowManagerService.java"
     },
+    "-1941440781": {
+      "message": "Creating Pending Move-to-back: %s",
+      "level": "VERBOSE",
+      "group": "WM_DEBUG_WINDOW_TRANSITIONS",
+      "at": "com\/android\/server\/wm\/Task.java"
+    },
     "-1939861963": {
       "message": "Create root task displayId=%d winMode=%d",
       "level": "VERBOSE",
