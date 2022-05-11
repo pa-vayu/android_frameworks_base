@@ -35,7 +35,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
@@ -422,7 +421,7 @@ public class TaskFragmentOrganizerControllerTest extends WindowTestsBase {
 
         // Throw exception if the transaction is trying to change a window that is not organized by
         // the organizer.
-        mTransaction.setAdjacentRoots(mFragmentWindowToken, token2, false /* moveTogether */);
+        mTransaction.setAdjacentRoots(mFragmentWindowToken, token2);
 
         assertApplyTransactionDisallowed(mTransaction);
 
@@ -635,9 +634,9 @@ public class TaskFragmentOrganizerControllerTest extends WindowTestsBase {
                 .setErrorCallbackToken(mErrorToken);
         mWindowOrganizerController.applyTransaction(mTransaction);
 
-        verify(mWindowOrganizerController).sendTaskFragmentOperationFailure(eq(mIOrganizer),
-                eq(mErrorToken), any(IllegalArgumentException.class));
-        verify(mTaskFragment, never()).setAdjacentTaskFragment(any(), anyBoolean());
+        verify(mAtm.mWindowOrganizerController).sendTaskFragmentOperationFailure(eq(mIOrganizer),
+                eq(errorToken), any(IllegalArgumentException.class));
+        verify(mTaskFragment, never()).setAdjacentTaskFragment(any());
     }
 
     @Test

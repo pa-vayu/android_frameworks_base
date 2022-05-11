@@ -1549,7 +1549,7 @@ class WindowTestsBase extends SystemServiceTestsBase {
             mSecondary = mService.mTaskOrganizerController.createRootTask(
                     display, WINDOWING_MODE_MULTI_WINDOW, null);
 
-            mPrimary.setAdjacentTaskFragment(mSecondary, true);
+            mPrimary.setAdjacentTaskFragment(mSecondary);
             display.getDefaultTaskDisplayArea().setLaunchAdjacentFlagRootTask(mSecondary);
 
             final Rect primaryBounds = new Rect();
