@@ -2173,6 +2173,7 @@ class WindowState extends WindowContainer<WindowState> implements WindowManagerP
             return;
         }
         if (mActivityRecord != null) {
+            if (!mActivityRecord.mVisibleRequested) return;
             if (mActivityRecord.allDrawn) {
                 // The allDrawn of activity is reset when the visibility is changed to visible, so
                 // the content should be ready if allDrawn is set.
