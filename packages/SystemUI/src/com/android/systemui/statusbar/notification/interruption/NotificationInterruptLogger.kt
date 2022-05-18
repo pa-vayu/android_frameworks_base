@@ -21,17 +21,15 @@ import com.android.systemui.log.LogBuffer
 import com.android.systemui.log.LogLevel.DEBUG
 import com.android.systemui.log.LogLevel.INFO
 import com.android.systemui.log.LogLevel.WARNING
-import com.android.systemui.log.dagger.NotificationHeadsUpLog
-import com.android.systemui.log.dagger.NotificationLog
+import com.android.systemui.log.dagger.NotificationInterruptLog
 import com.android.systemui.statusbar.notification.collection.NotificationEntry
 import javax.inject.Inject
 
 class NotificationInterruptLogger @Inject constructor(
-    @NotificationLog val notifBuffer: LogBuffer,
-    @NotificationHeadsUpLog val hunBuffer: LogBuffer
+    @NotificationInterruptLog val buffer: LogBuffer
 ) {
     fun logHeadsUpFeatureChanged(useHeadsUp: Boolean) {
-        hunBuffer.log(TAG, INFO, {
+        buffer.log(TAG, INFO, {
             bool1 = useHeadsUp
         }, {
             "heads up is enabled=$bool1"
@@ -39,14 +37,14 @@ class NotificationInterruptLogger @Inject constructor(
     }
 
     fun logWillDismissAll() {
-        hunBuffer.log(TAG, INFO, {
+        buffer.log(TAG, INFO, {
         }, {
             "dismissing any existing heads up notification on disable event"
         })
     }
 
     fun logNoBubbleNotAllowed(sbn: StatusBarNotification) {
-        notifBuffer.log(TAG, DEBUG, {
+        buffer.log(TAG, DEBUG, {
             str1 = sbn.key
         }, {
             "No bubble up: not allowed to bubble: $str1"
@@ -54,7 +52,7 @@ class NotificationInterruptLogger @Inject constructor(
     }
 
     fun logNoBubbleNoMetadata(sbn: StatusBarNotification) {
-        notifBuffer.log(TAG, DEBUG, {
+        buffer.log(TAG, DEBUG, {
             str1 = sbn.key
         }, {
             "No bubble up: notification: $str1 doesn't have valid metadata"
@@ -62,14 +60,14 @@ class NotificationInterruptLogger @Inject constructor(
     }
 
     fun logNoHeadsUpFeatureDisabled() {
-        hunBuffer.log(TAG, DEBUG, {
+        buffer.log(TAG, DEBUG, {
         }, {
             "No heads up: no huns"
         })
     }
 
     fun logNoHeadsUpPackageSnoozed(sbn: StatusBarNotification) {
-        hunBuffer.log(TAG, DEBUG, {
+        buffer.log(TAG, DEBUG, {
             str1 = sbn.key
         }, {
             "No alerting: snoozed package: $str1"
@@ -77,7 +75,7 @@ class NotificationInterruptLogger @Inject constructor(
     }
 
     fun logNoHeadsUpAlreadyBubbled(sbn: StatusBarNotification) {
-        hunBuffer.log(TAG, DEBUG, {
+        buffer.log(TAG, DEBUG, {
             str1 = sbn.key
         }, {
             "No heads up: in unlocked shade where notification is shown as a bubble: $str1"
@@ -85,7 +83,7 @@ class NotificationInterruptLogger @Inject constructor(
     }
 
     fun logNoHeadsUpSuppressedByDnd(sbn: StatusBarNotification) {
-        hunBuffer.log(TAG, DEBUG, {
+        buffer.log(TAG, DEBUG, {
             str1 = sbn.key
         }, {
             "No heads up: suppressed by DND: $str1"
@@ -93,7 +91,7 @@ class NotificationInterruptLogger @Inject constructor(
     }
 
     fun logNoHeadsUpNotImportant(sbn: StatusBarNotification) {
-        hunBuffer.log(TAG, DEBUG, {
+        buffer.log(TAG, DEBUG, {
             str1 = sbn.key
         }, {
             "No heads up: unimportant notification: $str1"
@@ -101,7 +99,7 @@ class NotificationInterruptLogger @Inject constructor(
     }
 
     fun logNoHeadsUpNotInUse(sbn: StatusBarNotification) {
-        hunBuffer.log(TAG, DEBUG, {
+        buffer.log(TAG, DEBUG, {
             str1 = sbn.key
         }, {
             "No heads up: not in use: $str1"
@@ -112,7 +110,7 @@ class NotificationInterruptLogger @Inject constructor(
         sbn: StatusBarNotification,
         suppressor: NotificationInterruptSuppressor
     ) {
-        hunBuffer.log(TAG, DEBUG, {
+        buffer.log(TAG, DEBUG, {
             str1 = sbn.key
             str2 = suppressor.name
         }, {
@@ -121,7 +119,7 @@ class NotificationInterruptLogger @Inject constructor(
     }
 
     fun logHeadsUp(sbn: StatusBarNotification) {
-        hunBuffer.log(TAG, DEBUG, {
+        buffer.log(TAG, DEBUG, {
             str1 = sbn.key
         }, {
             "Heads up: $str1"
@@ -129,7 +127,7 @@ class NotificationInterruptLogger @Inject constructor(
     }
 
     fun logNoAlertingFilteredOut(sbn: StatusBarNotification) {
-        hunBuffer.log(TAG, DEBUG, {
+        buffer.log(TAG, DEBUG, {
             str1 = sbn.key
         }, {
             "No alerting: filtered notification: $str1"
@@ -137,7 +135,7 @@ class NotificationInterruptLogger @Inject constructor(
     }
 
     fun logNoAlertingGroupAlertBehavior(sbn: StatusBarNotification) {
-        hunBuffer.log(TAG, DEBUG, {
+        buffer.log(TAG, DEBUG, {
             str1 = sbn.key
         }, {
             "No alerting: suppressed due to group alert behavior: $str1"
@@ -149,7 +147,7 @@ class NotificationInterruptLogger @Inject constructor(
         suppressor: NotificationInterruptSuppressor,
         awake: Boolean
     ) {
-        hunBuffer.log(TAG, DEBUG, {
+        buffer.log(TAG, DEBUG, {
             str1 = sbn.key
             str2 = suppressor.name
             bool1 = awake
@@ -159,7 +157,7 @@ class NotificationInterruptLogger @Inject constructor(
     }
 
     fun logNoAlertingRecentFullscreen(sbn: StatusBarNotification) {
-        hunBuffer.log(TAG, DEBUG, {
+        buffer.log(TAG, DEBUG, {
             str1 = sbn.key
         }, {
             "No alerting: recent fullscreen: $str1"
@@ -167,7 +165,7 @@ class NotificationInterruptLogger @Inject constructor(
     }
 
     fun logNoPulsingSettingDisabled(sbn: StatusBarNotification) {
-        hunBuffer.log(TAG, DEBUG, {
+        buffer.log(TAG, DEBUG, {
             str1 = sbn.key
         }, {
             "No pulsing: disabled by setting: $str1"
@@ -175,7 +173,7 @@ class NotificationInterruptLogger @Inject constructor(
     }
 
     fun logNoPulsingBatteryDisabled(sbn: StatusBarNotification) {
-        hunBuffer.log(TAG, DEBUG, {
+        buffer.log(TAG, DEBUG, {
             str1 = sbn.key
         }, {
             "No pulsing: disabled by battery saver: $str1"
@@ -183,7 +181,7 @@ class NotificationInterruptLogger @Inject constructor(
     }
 
     fun logNoPulsingNoAlert(sbn: StatusBarNotification) {
-        hunBuffer.log(TAG, DEBUG, {
+        buffer.log(TAG, DEBUG, {
             str1 = sbn.key
         }, {
             "No pulsing: notification shouldn't alert: $str1"
@@ -191,7 +189,7 @@ class NotificationInterruptLogger @Inject constructor(
     }
 
     fun logNoPulsingNoAmbientEffect(sbn: StatusBarNotification) {
-        hunBuffer.log(TAG, DEBUG, {
+        buffer.log(TAG, DEBUG, {
             str1 = sbn.key
         }, {
             "No pulsing: ambient effect suppressed: $str1"
@@ -199,7 +197,7 @@ class NotificationInterruptLogger @Inject constructor(
     }
 
     fun logNoPulsingNotImportant(sbn: StatusBarNotification) {
-        hunBuffer.log(TAG, DEBUG, {
+        buffer.log(TAG, DEBUG, {
             str1 = sbn.key
         }, {
             "No pulsing: not important enough: $str1"
@@ -207,7 +205,7 @@ class NotificationInterruptLogger @Inject constructor(
     }
 
     fun logPulsing(sbn: StatusBarNotification) {
-        hunBuffer.log(TAG, DEBUG, {
+        buffer.log(TAG, DEBUG, {
             str1 = sbn.key
         }, {
             "Pulsing: $str1"
@@ -242,7 +240,7 @@ class NotificationInterruptLogger @Inject constructor(
     }
 
     fun keyguardHideNotification(key: String) {
-        hunBuffer.log(TAG, DEBUG, {
+        buffer.log(TAG, DEBUG, {
             str1 = key
         }, {
             "Keyguard Hide Notification: $str1"
