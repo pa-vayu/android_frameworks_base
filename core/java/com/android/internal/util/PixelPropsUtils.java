@@ -35,6 +35,7 @@ public class PixelPropsUtils {
     public static final String PACKAGE_GMS = "com.google.android.gms";
     public static final String PACKAGE_ARCORE = "com.google.ar.core";
     public static final String PACKAGE_NETFLIX = "com.netflix.mediaclient";
+    public static final String PACKAGE_ARCORE = "com.google.ar.core";
 
     private static final Map<String, Object> propsToChange;
     private static final Map<String, Object> propsToChangeP5;
@@ -95,6 +96,8 @@ public class PixelPropsUtils {
             if (!stockFp.isEmpty()) {
                 setPropValue("FINGERPRINT", stockFp);
             }
+            return;
+        }
         if (packageName.equals(PACKAGE_NETFLIX) && !SystemProperties.getBoolean(
                 "persist.pixelpropsutils.spoof_netflix", true)) {
             if (DEBUG) Log.d(TAG, "Netflix spoofing disabled by system prop");
