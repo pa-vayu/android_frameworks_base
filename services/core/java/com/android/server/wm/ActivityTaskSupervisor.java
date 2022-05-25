@@ -42,6 +42,7 @@ import static android.content.pm.PackageManager.PERMISSION_DENIED;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static android.os.PowerManager.PARTIAL_WAKE_LOCK;
 import static android.os.Process.INVALID_UID;
+import static android.os.Process.SYSTEM_UID;
 import static android.os.Trace.TRACE_TAG_WINDOW_MANAGER;
 import static android.view.Display.DEFAULT_DISPLAY;
 import static android.view.WindowManager.TRANSIT_TO_FRONT;
@@ -123,7 +124,6 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.PowerManager;
-import android.os.Process;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.os.Trace;
@@ -1363,7 +1363,7 @@ public class ActivityTaskSupervisor implements RecentTasks.Callbacks {
     }
 
     void acquireLaunchWakelock() {
-        if (VALIDATE_WAKE_LOCK_CALLER && Binder.getCallingUid() != Process.myUid()) {
+        if (VALIDATE_WAKE_LOCK_CALLER && Binder.getCallingUid() != SYSTEM_UID) {
             throw new IllegalStateException("Calling must be system uid");
         }
         mLaunchingActivityWakeLock.acquire();
@@ -1436,8 +1436,7 @@ public class ActivityTaskSupervisor implements RecentTasks.Callbacks {
 
             if (mLaunchingActivityWakeLock.isHeld()) {
                 mHandler.removeMessages(LAUNCH_TIMEOUT_MSG);
-                if (VALIDATE_WAKE_LOCK_CALLER &&
-                        Binder.getCallingUid() != Process.myUid()) {
+                if (VALIDATE_WAKE_LOCK_CALLER && Binder.getCallingUid() != SYSTEM_UID) {
                     throw new IllegalStateException("Calling must be system uid");
                 }
                 mLaunchingActivityWakeLock.release();
@@ -1866,7 +1865,7 @@ public class ActivityTaskSupervisor implements RecentTasks.Callbacks {
         if (!mGoingToSleepWakeLock.isHeld()) {
             mGoingToSleepWakeLock.acquire();
             if (mLaunchingActivityWakeLock.isHeld()) {
-                if (VALIDATE_WAKE_LOCK_CALLER && Binder.getCallingUid() != Process.myUid()) {
+                if (VALIDATE_WAKE_LOCK_CALLER && Binder.getCallingUid() != SYSTEM_UID) {
                     throw new IllegalStateException("Calling must be system uid");
                 }
                 mLaunchingActivityWakeLock.release();
@@ -2602,8 +2601,7 @@ public class ActivityTaskSupervisor implements RecentTasks.Callbacks {
                 case LAUNCH_TIMEOUT_MSG: {
                     if (mLaunchingActivityWakeLock.isHeld()) {
                         Slog.w(TAG, "Launch timeout has expired, giving up wake lock!");
-                        if (VALIDATE_WAKE_LOCK_CALLER
-                                && Binder.getCallingUid() != Process.myUid()) {
+                        if (VALIDATE_WAKE_LOCK_CALLER && Binder.getCallingUid() != SYSTEM_UID) {
                             throw new IllegalStateException("Calling must be system uid");
                         }
                         mLaunchingActivityWakeLock.release();
