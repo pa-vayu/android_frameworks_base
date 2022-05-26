@@ -108,6 +108,8 @@ public class KeyguardSecurityContainerControllerTest extends SysuiTestCase {
     @Mock
     private KeyguardMessageAreaController.Factory mKeyguardMessageAreaControllerFactory;
     @Mock
+    private KeyguardMessageAreaController mKeyguardMessageAreaController;
+    @Mock
     private KeyguardMessageArea mKeyguardMessageArea;
     @Mock
     private ConfigurationController mConfigurationController;
@@ -151,6 +153,8 @@ public class KeyguardSecurityContainerControllerTest extends SysuiTestCase {
         when(mKeyguardPasswordView.getRootView()).thenReturn(mSecurityViewFlipper);
         when(mKeyguardPasswordView.findViewById(R.id.keyguard_message_area))
                 .thenReturn(mKeyguardMessageArea);
+        when(mKeyguardMessageAreaControllerFactory.create(any(KeyguardMessageArea.class)))
+                .thenReturn(mKeyguardMessageAreaController);
         when(mKeyguardPasswordView.getWindowInsetsController()).thenReturn(mWindowInsetsController);
         mKeyguardPasswordViewController = new KeyguardPasswordViewController(
                 (KeyguardPasswordView) mKeyguardPasswordView, mKeyguardUpdateMonitor,
