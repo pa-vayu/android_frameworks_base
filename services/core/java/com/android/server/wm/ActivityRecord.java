@@ -7473,6 +7473,7 @@ public final class ActivityRecord extends WindowToken implements WindowManagerSe
         mTransit = TRANSIT_OLD_UNSET;
         mTransitFlags = 0;
         mNeedsAnimationBoundsLayer = false;
+        mDismissKeyguard = false;
 
         setAppLayoutChanges(FINISH_LAYOUT_REDO_ANIM | FINISH_LAYOUT_REDO_WALLPAPER,
                 "ActivityRecord");
