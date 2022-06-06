@@ -2575,7 +2575,7 @@ class TaskFragment extends WindowContainer<WindowContainer> {
         if (!hasChild()) {
             return false;
         }
-        return isExitAnimationRunningSelfOrChild() || inTransition();
+        return isExitAnimationRunningSelfOrChild();
     }
 
     @Override

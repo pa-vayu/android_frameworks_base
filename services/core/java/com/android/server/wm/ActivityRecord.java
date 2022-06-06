@@ -8113,8 +8113,7 @@ public final class ActivityRecord extends WindowToken implements WindowManagerSe
     }
 
     boolean isInTransition() {
-        return mTransitionController.inTransition(this) // Shell transitions.
-                || isAnimating(PARENTS | TRANSITION); // Legacy transitions.
+        return inTransitionSelfOrParent();
     }
 
     /**
