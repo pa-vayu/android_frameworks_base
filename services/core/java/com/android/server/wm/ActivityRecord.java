@@ -943,7 +943,7 @@ public final class ActivityRecord extends WindowToken implements WindowManagerSe
     // SystemUi sets the pinned mode on activity after transition is done.
     boolean mWaitForEnteringPinnedMode;
 
-    private final ActivityRecordInputSink mActivityRecordInputSink;
+    final ActivityRecordInputSink mActivityRecordInputSink;
 
     // Activities with this uid are allowed to not create an input sink while being in the same
     // task and directly above this ActivityRecord. This field is updated whenever a new activity
@@ -8105,7 +8105,7 @@ public final class ActivityRecord extends WindowToken implements WindowManagerSe
     }
 
     boolean isInTransition() {
-        return mTransitionController.inTransition() // Shell transitions.
+        return mTransitionController.inTransition(this) // Shell transitions.
                 || isAnimating(PARENTS | TRANSITION); // Legacy transitions.
     }
 
