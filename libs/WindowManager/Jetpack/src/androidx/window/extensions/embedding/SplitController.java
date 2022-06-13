@@ -389,6 +389,7 @@ public class SplitController implements JetpackTaskFragmentOrganizer.TaskFragmen
      *         in a state that the caller shouldn't handle.
      */
     @VisibleForTesting
+    @GuardedBy("mLock")
     boolean resolveActivityToContainer(@NonNull Activity activity, boolean isOnReparent) {
         if (isInPictureInPicture(activity) || activity.isFinishing()) {
             // We don't embed activity when it is in PIP, or finishing. Return true since we don't
@@ -615,6 +616,7 @@ public class SplitController implements JetpackTaskFragmentOrganizer.TaskFragmen
      * Checks if there is a rule to split the two activities. If there is one, puts them into split
      * and returns {@code true}. Otherwise, returns {@code false}.
      */
+    @GuardedBy("mLock")
     private boolean putActivitiesIntoSplitIfNecessary(@NonNull Activity primaryActivity,
             @NonNull Activity secondaryActivity) {
         final SplitPairRule splitRule = getSplitRule(primaryActivity, secondaryActivity);
@@ -801,6 +803,7 @@ public class SplitController implements JetpackTaskFragmentOrganizer.TaskFragmen
      * Returns a container for the new activity intent to launch into as splitting with the primary
      * activity.
      */
+    @GuardedBy("mLock")
     @Nullable
     private TaskFragmentContainer getSecondaryContainerForSplitIfAny(
             @NonNull WindowContainerTransaction wct, @NonNull Activity primaryActivity,
@@ -873,6 +876,7 @@ public class SplitController implements JetpackTaskFragmentOrganizer.TaskFragmen
      *                                  if needed.
      * @param taskId                    parent Task of the new TaskFragment.
      */
+    @GuardedBy("mLock")
     TaskFragmentContainer newContainer(@Nullable Activity pendingAppearedActivity,
             @Nullable Intent pendingAppearedIntent, @NonNull Activity activityInTask, int taskId) {
         if (activityInTask == null) {

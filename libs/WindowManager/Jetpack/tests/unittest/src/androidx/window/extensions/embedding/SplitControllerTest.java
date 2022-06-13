@@ -865,6 +865,29 @@ public class SplitControllerTest {
         assertSplitPair(activityBelow, mActivity, true /* matchParentBounds */);
     }
 
+    // Suppress GuardedBy warning on unit tests
+    @SuppressWarnings("GuardedBy")
+    @Test
+    public void testResolveActivityToContainer_minDimensions_shouldExpandSplitContainer() {
+        final Activity primaryActivity = createMockActivity();
+        final Activity secondaryActivity = createMockActivity();
+        addSplitTaskFragments(primaryActivity, secondaryActivity, false /* clearTop */);
+
+        setupSplitRule(primaryActivity, mActivity, false /* clearTop */);
+        doReturn(createActivityInfoWithMinDimensions()).when(mActivity).getActivityInfo();
+        doReturn(secondaryActivity).when(mSplitController).findActivityBelow(eq(mActivity));
+
+        clearInvocations(mSplitPresenter);
+        boolean result = mSplitController.resolveActivityToContainer(mActivity,
+                false /* isOnReparent */);
+
+        assertTrue(result);
+        assertSplitPair(primaryActivity, mActivity, true /* matchParentBounds */);
+        assertEquals(mSplitController.getContainerWithActivity(secondaryActivity),
+                mSplitController.getContainerWithActivity(mActivity));
+        verify(mSplitPresenter, never()).createNewSplitContainer(any(), any(), any());
+    }
+
     @Test
     public void testResolveActivityToContainer_minDimensions_shouldExpandSplitContainer() {
         final Activity primaryActivity = createMockActivity();
