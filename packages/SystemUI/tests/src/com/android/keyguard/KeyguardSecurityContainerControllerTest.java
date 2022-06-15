@@ -30,7 +30,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -145,7 +144,6 @@ public class KeyguardSecurityContainerControllerTest extends SysuiTestCase {
         when(mResources.getConfiguration()).thenReturn(mConfiguration);
         when(mView.getContext()).thenReturn(mContext);
         when(mView.getResources()).thenReturn(mResources);
-        when(mView.getWidth()).thenReturn(VIEW_WIDTH);
         when(mAdminSecondaryLockScreenControllerFactory.create(any(KeyguardSecurityCallback.class)))
                 .thenReturn(mAdminSecondaryLockScreenController);
         when(mSecurityViewFlipper.getWindowInsetsController()).thenReturn(mWindowInsetsController);
@@ -216,49 +214,26 @@ public class KeyguardSecurityContainerControllerTest extends SysuiTestCase {
                 mUserSwitcherController);
     }
 
-    private void touchDownLeftSide() {
+    private void touchDown() {
         mKeyguardSecurityContainerController.mGlobalTouchListener.onTouchEvent(
                 MotionEvent.obtain(
                         /* downTime= */0,
                         /* eventTime= */0,
                         MotionEvent.ACTION_DOWN,
-                        /* x= */VIEW_WIDTH / 3f,
-                        /* y= */0,
-                        /* metaState= */0));
-    }
-
-    private void touchDownRightSide() {
-        mKeyguardSecurityContainerController.mGlobalTouchListener.onTouchEvent(
-                MotionEvent.obtain(
-                        /* downTime= */0,
-                        /* eventTime= */0,
-                        MotionEvent.ACTION_DOWN,
-                        /* x= */(VIEW_WIDTH / 3f) * 2,
+                        /* x= */0,
                         /* y= */0,
                         /* metaState= */0));
     }
 
     @Test
-    public void onInterceptTap_inhibitsFalsingInOneHandedMode() {
-        when(mView.getMode()).thenReturn(MODE_ONE_HANDED);
-        when(mView.isOneHandedModeLeftAligned()).thenReturn(true);
+    public void onInterceptTap_inhibitsFalsingInSidedSecurityMode() {
 
-        touchDownLeftSide();
+        when(mView.isTouchOnTheOtherSideOfSecurity(any())).thenReturn(false);
+        touchDown();
         verify(mFalsingCollector, never()).avoidGesture();
 
-        // Now on the right.
-        touchDownRightSide();
-        verify(mFalsingCollector).avoidGesture();
-
-        // Move and re-test
-        reset(mFalsingCollector);
-        when(mView.isOneHandedModeLeftAligned()).thenReturn(false);
-
-        // On the right...
-        touchDownRightSide();
-        verify(mFalsingCollector, never()).avoidGesture();
-
-        touchDownLeftSide();
+        when(mView.isTouchOnTheOtherSideOfSecurity(any())).thenReturn(true);
+        touchDown();
         verify(mFalsingCollector).avoidGesture();
     }
 

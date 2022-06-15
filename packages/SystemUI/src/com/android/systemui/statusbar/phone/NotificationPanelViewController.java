@@ -1704,7 +1704,6 @@ public class NotificationPanelViewController extends PanelViewController {
         setQsExpansionEnabled();
     }
 
-    @Override
     public void resetViews(boolean animate) {
         mIsLaunchTransitionFinished = false;
         mBlockTouches = false;
