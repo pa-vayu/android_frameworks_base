@@ -493,7 +493,7 @@ public final class DisplayManagerService extends SystemService {
         mUiHandler = UiThread.getHandler();
         mDisplayDeviceRepo = new DisplayDeviceRepository(mSyncRoot, mPersistentDataStore);
         mLogicalDisplayMapper = new LogicalDisplayMapper(mContext, mDisplayDeviceRepo,
-                new LogicalDisplayListener(), mSyncRoot, mHandler, new DeviceStateToLayoutMap());
+                new LogicalDisplayListener(), mSyncRoot, mHandler);
         mDisplayModeDirector = new DisplayModeDirector(context, mHandler);
         mBrightnessSynchronizer = new BrightnessSynchronizer(mContext);
         Resources resources = mContext.getResources();
@@ -956,8 +956,7 @@ public final class DisplayManagerService extends SystemService {
 
     private DisplayInfo getDisplayInfoInternal(int displayId, int callingUid) {
         synchronized (mSyncRoot) {
-            final LogicalDisplay display = mLogicalDisplayMapper.getDisplayLocked(displayId,
-                    /* includeDisabledDisplays= */ true);
+            final LogicalDisplay display = mLogicalDisplayMapper.getDisplayLocked(displayId);
             if (display != null) {
                 final DisplayInfo info =
                         getDisplayInfoForFrameRateOverride(display.getFrameRateOverrides(),
@@ -2140,18 +2139,16 @@ public final class DisplayManagerService extends SystemService {
     }
 
     void resetBrightnessConfigurations() {
-        synchronized (mSyncRoot) {
-            mPersistentDataStore.setBrightnessConfigurationForUser(null, mContext.getUserId(),
+        mPersistentDataStore.setBrightnessConfigurationForUser(null, mContext.getUserId(),
+                mContext.getPackageName());
+        mLogicalDisplayMapper.forEachLocked((logicalDisplay -> {
+            if (logicalDisplay.getDisplayInfoLocked().type != Display.TYPE_INTERNAL) {
+                return;
+            }
+            final String uniqueId = logicalDisplay.getPrimaryDisplayDeviceLocked().getUniqueId();
+            setBrightnessConfigurationForDisplayInternal(null, uniqueId, mContext.getUserId(),
                     mContext.getPackageName());
-            mLogicalDisplayMapper.forEachLocked((logicalDisplay -> {
-                if (logicalDisplay.getDisplayInfoLocked().type != Display.TYPE_INTERNAL) {
-                    return;
-                }
-                String uniqueId = logicalDisplay.getPrimaryDisplayDeviceLocked().getUniqueId();
-                setBrightnessConfigurationForDisplayInternal(null, uniqueId, mContext.getUserId(),
-                        mContext.getPackageName());
-            }));
-        }
+        }));
     }
 
     void setAutoBrightnessLoggingEnabled(boolean enabled) {
@@ -2839,16 +2836,15 @@ public final class DisplayManagerService extends SystemService {
         }
 
         /**
-         * Returns the list of all enabled display ids, and disabled ones if specified.
+         * Returns the list of all display ids.
          */
         @Override // Binder call
-        public int[] getDisplayIds(boolean includeDisabledDisplays) {
+        public int[] getDisplayIds() {
             final int callingUid = Binder.getCallingUid();
             final long token = Binder.clearCallingIdentity();
             try {
                 synchronized (mSyncRoot) {
-                    return mLogicalDisplayMapper.getDisplayIdsLocked(callingUid,
-                            includeDisabledDisplays);
+                    return mLogicalDisplayMapper.getDisplayIdsLocked(callingUid);
                 }
             } finally {
                 Binder.restoreCallingIdentity(token);
