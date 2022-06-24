@@ -4784,6 +4784,8 @@ public final class ActivityRecord extends WindowToken implements WindowManagerSe
         if (mPendingRemoteAnimation != null) {
             mDisplayContent.mAppTransition.overridePendingAppTransitionRemote(
                     mPendingRemoteAnimation);
+            mTransitionController.setStatusBarTransitionDelay(
+                    mPendingRemoteAnimation.getStatusBarTransitionDelay());
         } else {
             if (mPendingOptions == null
                     || mPendingOptions.getAnimationType() == ANIM_SCENE_TRANSITION) {
