@@ -210,11 +210,9 @@ public class NotificationInterruptStateProviderImplTest extends SysuiTestCase {
 
     @Test
     public void testDoNotRunFilterOnNewPipeline() {
-        when(mFlags.isNewPipelineEnabled()).thenReturn(true);
         // WHEN this entry should be filtered out
         NotificationEntry entry  = createNotification(IMPORTANCE_DEFAULT);
         mNotifInterruptionStateProvider.shouldHeadsUp(entry);
-        verify(mFlags, times(1)).isNewPipelineEnabled();
         verify(mNotificationFilter, times(0)).shouldFilterOut(eq(entry));
     }
 
@@ -330,7 +328,8 @@ public class NotificationInterruptStateProviderImplTest extends SysuiTestCase {
     public void testShouldNotHeadsUp_filtered() throws RemoteException {
         ensureStateForHeadsUpWhenAwake();
         // Make canAlertCommon false by saying it's filtered out
-        when(mNotificationFilter.shouldFilterOut(any())).thenReturn(true);
+        when(mKeyguardNotificationVisibilityProvider.shouldHideNotification(any()))
+                .thenReturn(true);
 
         NotificationEntry entry = createNotification(IMPORTANCE_HIGH);
         assertThat(mNotifInterruptionStateProvider.shouldHeadsUp(entry)).isFalse();
@@ -624,7 +623,8 @@ public class NotificationInterruptStateProviderImplTest extends SysuiTestCase {
         ensureStateForBubbleUp();
 
         // Make canAlertCommon false by saying it's filtered out
-        when(mNotificationFilter.shouldFilterOut(any())).thenReturn(true);
+        when(mKeyguardNotificationVisibilityProvider.shouldHideNotification(any()))
+                .thenReturn(true);
 
         assertThat(mNotifInterruptionStateProvider.shouldBubbleUp(createBubble())).isFalse();
     }
