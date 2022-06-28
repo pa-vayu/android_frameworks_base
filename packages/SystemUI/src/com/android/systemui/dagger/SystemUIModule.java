@@ -60,8 +60,6 @@ import com.android.systemui.statusbar.NotificationLockscreenUserManager;
 import com.android.systemui.statusbar.NotificationMediaManager;
 import com.android.systemui.statusbar.NotificationShadeWindowController;
 import com.android.systemui.statusbar.QsFrameTranslateModule;
-import com.android.systemui.statusbar.notification.NotifPipelineFlags;
-import com.android.systemui.statusbar.notification.NotificationEntryManager;
 import com.android.systemui.statusbar.notification.collection.NotifPipeline;
 import com.android.systemui.statusbar.notification.collection.inflation.NotificationRowBinder;
 import com.android.systemui.statusbar.notification.collection.inflation.NotificationRowBinderImpl;
@@ -244,11 +242,9 @@ public abstract class SystemUIModule {
             ZenModeController zenModeController,
             NotificationLockscreenUserManager notifUserManager,
             NotificationGroupManagerLegacy groupManager,
-            NotificationEntryManager entryManager,
             CommonNotifCollection notifCollection,
             NotifPipeline notifPipeline,
             SysUiState sysUiState,
-            NotifPipelineFlags notifPipelineFlags,
             DumpManager dumpManager,
             @Main Executor sysuiMainExecutor) {
         return Optional.ofNullable(BubblesManager.create(context,
@@ -264,11 +260,9 @@ public abstract class SystemUIModule {
                 zenModeController,
                 notifUserManager,
                 groupManager,
-                entryManager,
                 notifCollection,
                 notifPipeline,
                 sysUiState,
-                notifPipelineFlags,
                 dumpManager,
                 sysuiMainExecutor));
     }
