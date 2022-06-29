@@ -835,7 +835,6 @@ public class CentralSurfacesImplTest extends SysuiTestCase {
         mCentralSurfaces.showKeyguardImpl();
 
         // Starting a pulse should change the scrim controller to the pulsing state
-        when(mNotificationPanelViewController.isLaunchTransitionRunning()).thenReturn(true);
         when(mNotificationPanelViewController.isLaunchingAffordanceWithPreview()).thenReturn(true);
         mCentralSurfaces.updateScrimController();
         verify(mScrimController).transitionTo(eq(ScrimState.UNLOCKED), any());
@@ -872,7 +871,6 @@ public class CentralSurfacesImplTest extends SysuiTestCase {
         mCentralSurfaces.showKeyguardImpl();
 
         // Starting a pulse should change the scrim controller to the pulsing state
-        when(mNotificationPanelViewController.isLaunchTransitionRunning()).thenReturn(true);
         when(mNotificationPanelViewController.isLaunchingAffordanceWithPreview()).thenReturn(false);
         mCentralSurfaces.updateScrimController();
         verify(mScrimController).transitionTo(eq(ScrimState.KEYGUARD));
