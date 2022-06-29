@@ -1177,9 +1177,6 @@ public class CentralSurfacesImpl extends CoreStartable implements
 
         mStatusBarTouchableRegionManager.setup(this, mNotificationShadeWindowView);
         mHeadsUpManager.addListener(mNotificationPanelViewController.getOnHeadsUpChangedListener());
-        if (!mNotifPipelineFlags.isNewPipelineEnabled()) {
-            mHeadsUpManager.addListener(mVisualStabilityManager);
-        }
         mNotificationPanelViewController.setHeadsUpManager(mHeadsUpManager);
 
         createNavigationBar(result);
@@ -4368,9 +4365,6 @@ public class CentralSurfacesImpl extends CoreStartable implements
                 Log.v(TAG, "configuration changed: " + mContext.getResources().getConfiguration());
             }
 
-            if (!mNotifPipelineFlags.isNewPipelineEnabled()) {
-                mViewHierarchyManager.updateRowStates();
-            }
             mScreenPinningRequest.onConfigurationChanged();
         }
 
