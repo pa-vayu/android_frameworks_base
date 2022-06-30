@@ -409,6 +409,9 @@ public class QuickStatusBarHeader extends FrameLayout implements
                     @Override
                     public void onAnimationAtEnd() {
                         super.onAnimationAtEnd();
+                        if (!mIsSingleCarrier) {
+                            mIconContainer.addIgnoredSlots(mRssiIgnoredSlots);
+                        }
                         // Make it gone so there's enough room for carrier names
                         mClockDateView.setVisibility(View.GONE);
                     }
@@ -418,6 +421,9 @@ public class QuickStatusBarHeader extends FrameLayout implements
                         mClockDateView.setVisibility(View.VISIBLE);
                         mClockDateView.setFreezeSwitching(true);
                         setSeparatorVisibility(false);
+                        if (!mIsSingleCarrier) {
+                            mIconContainer.addIgnoredSlots(mRssiIgnoredSlots);
+                        }
                     }
 
                     @Override
@@ -426,6 +432,8 @@ public class QuickStatusBarHeader extends FrameLayout implements
                         mClockDateView.setFreezeSwitching(false);
                         mClockDateView.setVisibility(View.VISIBLE);
                         setSeparatorVisibility(mShowClockIconsSeparator);
+                        // In QQS we never ignore RSSI.
+                        mIconContainer.removeIgnoredSlots(mRssiIgnoredSlots);
                     }
                 });
         mAlphaAnimator = builder.build();
