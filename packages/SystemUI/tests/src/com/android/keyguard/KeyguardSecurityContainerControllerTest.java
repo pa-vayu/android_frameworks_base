@@ -28,17 +28,21 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.hardware.biometrics.BiometricSourceType;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.WindowInsetsController;
 
 import androidx.test.filters.SmallTest;
@@ -49,6 +53,7 @@ import com.android.internal.widget.LockPatternUtils;
 import com.android.keyguard.KeyguardSecurityModel.SecurityMode;
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
+import com.android.systemui.biometrics.SidefpsController;
 import com.android.systemui.classifier.FalsingCollector;
 import com.android.systemui.flags.FeatureFlags;
 import com.android.systemui.log.SessionTracker;
@@ -62,9 +67,13 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+
+import java.util.Optional;
 
 @SmallTest
 @RunWith(AndroidTestingRunner.class)
@@ -130,6 +139,14 @@ public class KeyguardSecurityContainerControllerTest extends SysuiTestCase {
     private SessionTracker mSessionTracker;
     @Mock
     private KeyguardViewController mKeyguardViewController;
+    @Mock
+    private SidefpsController mSidefpsController;
+    @Mock
+    private KeyguardPasswordViewController mKeyguardPasswordViewControllerMock;
+
+    @Captor
+    private ArgumentCaptor<KeyguardUpdateMonitorCallback> mKeyguardUpdateMonitorCallback;
+
     private Configuration mConfiguration;
 
     private KeyguardSecurityContainerController mKeyguardSecurityContainerController;
@@ -166,7 +183,7 @@ public class KeyguardSecurityContainerControllerTest extends SysuiTestCase {
                 mKeyguardStateController, mKeyguardSecurityViewFlipperController,
                 mConfigurationController, mFalsingCollector, mFalsingManager,
                 mUserSwitcherController, mFeatureFlags, mGlobalSettings,
-                mSessionTracker).create(mSecurityCallback);
+                mSessionTracker, Optional.of(mSidefpsController)).create(mSecurityCallback);
     }
 
     @Test
@@ -264,9 +281,7 @@ public class KeyguardSecurityContainerControllerTest extends SysuiTestCase {
     @Test
     public void showSecurityScreen_twoHandedMode_flagEnabled_noOneHandedMode() {
         when(mResources.getBoolean(R.bool.can_use_one_handed_bouncer)).thenReturn(true);
-        when(mKeyguardSecurityViewFlipperController.getSecurityView(
-                eq(SecurityMode.Password), any(KeyguardSecurityCallback.class)))
-                .thenReturn((KeyguardInputViewController) mKeyguardPasswordViewController);
+        setupGetSecurityView();
 
         mKeyguardSecurityContainerController.showSecurityScreen(SecurityMode.Password);
         verify(mView).initMode(MODE_DEFAULT, mGlobalSettings, mFalsingManager,
@@ -284,40 +299,124 @@ public class KeyguardSecurityContainerControllerTest extends SysuiTestCase {
     }
 
     @Test
-    public void showNextSecurityScreenOrFinish_setsSecurityScreenToPinAfterSimPinUnlock() {
-        // GIVEN the current security method is SimPin
-        when(mKeyguardUpdateMonitor.getUserHasTrust(anyInt())).thenReturn(false);
-        when(mKeyguardUpdateMonitor.getUserUnlockedWithBiometric(TARGET_USER_ID)).thenReturn(false);
-        mKeyguardSecurityContainerController.showSecurityScreen(SecurityMode.SimPin);
+    public void onBouncerVisibilityChanged_allConditionsGood_sideFpsHintShown() {
+        setupConditionsToEnableSideFpsHint();
+        reset(mSidefpsController);
 
-        // WHEN a request is made from the SimPin screens to show the next security method
-        when(mKeyguardSecurityModel.getSecurityMode(TARGET_USER_ID)).thenReturn(SecurityMode.PIN);
-        mKeyguardSecurityContainerController.showNextSecurityScreenOrFinish(
-                /* authenticated= */true,
-                TARGET_USER_ID,
-                /* bypassSecondaryLockScreen= */true,
-                SecurityMode.SimPin);
+        mKeyguardSecurityContainerController.onBouncerVisibilityChanged(View.VISIBLE);
 
-        // THEN the next security method of PIN is set, and the keyguard is not marked as done
-        verify(mSecurityCallback, never()).finish(anyBoolean(), anyInt());
-        assertThat(mKeyguardSecurityContainerController.getCurrentSecurityMode())
-                .isEqualTo(SecurityMode.PIN);
+        verify(mSidefpsController).show();
+        verify(mSidefpsController, never()).hide();
     }
 
     @Test
-    public void showNextSecurityScreenOrFinish_ignoresCallWhenSecurityMethodHasChanged() {
-        //GIVEN current security mode has been set to PIN
-        mKeyguardSecurityContainerController.showSecurityScreen(SecurityMode.PIN);
+    public void onBouncerVisibilityChanged_fpsSensorNotRunning_sideFpsHintHidden() {
+        setupConditionsToEnableSideFpsHint();
+        setFingerprintDetectionRunning(false);
+        reset(mSidefpsController);
 
-        //WHEN a request comes from SimPin to dismiss the security screens
-        boolean keyguardDone = mKeyguardSecurityContainerController.showNextSecurityScreenOrFinish(
-                /* authenticated= */true,
-                TARGET_USER_ID,
-                /* bypassSecondaryLockScreen= */true,
-                SecurityMode.SimPin);
+        mKeyguardSecurityContainerController.onBouncerVisibilityChanged(View.VISIBLE);
 
-        //THEN no action has happened, which will not dismiss the security screens
-        assertThat(keyguardDone).isEqualTo(false);
-        verify(mKeyguardUpdateMonitor, never()).getUserHasTrust(anyInt());
+        verify(mSidefpsController).hide();
+        verify(mSidefpsController, never()).show();
+    }
+
+    @Test
+    public void onBouncerVisibilityChanged_withoutSidedSecurity_sideFpsHintHidden() {
+        setupConditionsToEnableSideFpsHint();
+        setSidedSecurityMode(false);
+        reset(mSidefpsController);
+
+        mKeyguardSecurityContainerController.onBouncerVisibilityChanged(View.VISIBLE);
+
+        verify(mSidefpsController).hide();
+        verify(mSidefpsController, never()).show();
+    }
+
+    @Test
+    public void onBouncerVisibilityChanged_needsStrongAuth_sideFpsHintHidden() {
+        setupConditionsToEnableSideFpsHint();
+        setNeedsStrongAuth(true);
+        reset(mSidefpsController);
+
+        mKeyguardSecurityContainerController.onBouncerVisibilityChanged(View.VISIBLE);
+
+        verify(mSidefpsController).hide();
+        verify(mSidefpsController, never()).show();
+    }
+
+    @Test
+    public void onBouncerVisibilityChanged_sideFpsHintShown_sideFpsHintHidden() {
+        setupGetSecurityView();
+        setupConditionsToEnableSideFpsHint();
+        mKeyguardSecurityContainerController.onBouncerVisibilityChanged(View.VISIBLE);
+        verify(mSidefpsController, atLeastOnce()).show();
+        reset(mSidefpsController);
+
+        mKeyguardSecurityContainerController.onBouncerVisibilityChanged(View.INVISIBLE);
+
+        verify(mSidefpsController).hide();
+        verify(mSidefpsController, never()).show();
+    }
+
+    @Test
+    public void onStartingToHide_sideFpsHintShown_sideFpsHintHidden() {
+        setupGetSecurityView();
+        setupConditionsToEnableSideFpsHint();
+        mKeyguardSecurityContainerController.onBouncerVisibilityChanged(View.VISIBLE);
+        verify(mSidefpsController, atLeastOnce()).show();
+        reset(mSidefpsController);
+
+        mKeyguardSecurityContainerController.onStartingToHide();
+
+        verify(mSidefpsController).hide();
+        verify(mSidefpsController, never()).show();
+    }
+
+    @Test
+    public void onPause_sideFpsHintShown_sideFpsHintHidden() {
+        setupGetSecurityView();
+        setupConditionsToEnableSideFpsHint();
+        mKeyguardSecurityContainerController.onBouncerVisibilityChanged(View.VISIBLE);
+        verify(mSidefpsController, atLeastOnce()).show();
+        reset(mSidefpsController);
+
+        mKeyguardSecurityContainerController.onPause();
+
+        verify(mSidefpsController).hide();
+        verify(mSidefpsController, never()).show();
+    }
+
+    private void setupConditionsToEnableSideFpsHint() {
+        attachView();
+        setSidedSecurityMode(true);
+        setFingerprintDetectionRunning(true);
+        setNeedsStrongAuth(false);
+    }
+
+    private void attachView() {
+        mKeyguardSecurityContainerController.onViewAttached();
+        verify(mKeyguardUpdateMonitor).registerCallback(mKeyguardUpdateMonitorCallback.capture());
+    }
+
+    private void setFingerprintDetectionRunning(boolean running) {
+        when(mKeyguardUpdateMonitor.isFingerprintDetectionRunning()).thenReturn(running);
+        mKeyguardUpdateMonitorCallback.getValue().onBiometricRunningStateChanged(running,
+                BiometricSourceType.FINGERPRINT);
+    }
+
+    private void setSidedSecurityMode(boolean sided) {
+        when(mView.isSidedSecurityMode()).thenReturn(sided);
+    }
+
+    private void setNeedsStrongAuth(boolean needed) {
+        when(mKeyguardUpdateMonitor.userNeedsStrongAuth()).thenReturn(needed);
+        mKeyguardUpdateMonitorCallback.getValue().onStrongAuthStateChanged(/* userId= */ 0);
+    }
+
+    private void setupGetSecurityView() {
+        when(mKeyguardSecurityViewFlipperController.getSecurityView(
+                any(), any(KeyguardSecurityCallback.class)))
+                .thenReturn((KeyguardInputViewController) mKeyguardPasswordViewControllerMock);
     }
 }
