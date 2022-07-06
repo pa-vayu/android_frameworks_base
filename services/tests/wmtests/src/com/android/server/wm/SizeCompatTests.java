@@ -1465,6 +1465,184 @@ public class SizeCompatTests extends WindowTestsBase {
     }
 
     @Test
+    public void testDisplayIgnoreOrientationRequest_unresizableWithCorrespondingMinAspectRatio() {
+        // Set up a display in landscape and ignoring orientation request.
+        setUpDisplaySizeWithApp(2800, 1400);
+        mActivity.mDisplayContent.setIgnoreOrientationRequest(true /* ignoreOrientationRequest */);
+
+        final float fixedOrientationLetterboxAspectRatio = 1.1f;
+        mActivity.mWmService.mLetterboxConfiguration.setFixedOrientationLetterboxAspectRatio(
+                fixedOrientationLetterboxAspectRatio);
+        mActivity.mWmService.mLetterboxConfiguration.setDefaultMinAspectRatioForUnresizableApps(
+                1.5f);
+        prepareUnresizable(mActivity, SCREEN_ORIENTATION_PORTRAIT);
+
+        final Rect displayBounds = new Rect(mActivity.mDisplayContent.getBounds());
+        final Rect activityBounds = new Rect(mActivity.getBounds());
+
+        // Display shouldn't be rotated.
+        assertEquals(SCREEN_ORIENTATION_UNSPECIFIED,
+                mActivity.mDisplayContent.getLastOrientation());
+        assertTrue(displayBounds.width() > displayBounds.height());
+
+        // App should launch in fixed orientation letterbox.
+        assertTrue(mActivity.isLetterboxedForFixedOrientationAndAspectRatio());
+        assertFalse(mActivity.inSizeCompatMode());
+
+        // Letterbox logic should use config_letterboxDefaultMinAspectRatioForUnresizableApps over
+        // config_fixedOrientationLetterboxAspectRatio.
+        assertEquals(displayBounds.height(), activityBounds.height());
+        final float defaultAspectRatio = mActivity.mWmService.mLetterboxConfiguration
+                .getDefaultMinAspectRatioForUnresizableApps();
+        assertEquals(displayBounds.height() / defaultAspectRatio, activityBounds.width(), 0.5);
+    }
+
+    @Test
+    public void testComputeConfigResourceOverrides_unresizableApp() {
+        // Set up a display in landscape and ignoring orientation request.
+        setUpDisplaySizeWithApp(2800, 1400);
+        mActivity.mDisplayContent.setIgnoreOrientationRequest(true /* ignoreOrientationRequest */);
+
+        prepareUnresizable(mActivity, SCREEN_ORIENTATION_PORTRAIT);
+
+        final Rect activityBounds = new Rect(mActivity.getBounds());
+
+        int originalScreenWidthDp = mActivity.getConfiguration().screenWidthDp;
+        int originalScreenHeighthDp = mActivity.getConfiguration().screenHeightDp;
+
+        // App should launch in fixed orientation letterbox.
+        // Activity bounds should be 700x1400 with the ratio as the display.
+        assertTrue(mActivity.isLetterboxedForFixedOrientationAndAspectRatio());
+        assertFitted();
+        assertEquals(originalScreenWidthDp, mActivity.getConfiguration().smallestScreenWidthDp);
+        assertTrue(originalScreenWidthDp < originalScreenHeighthDp);
+
+        // Rotate display to portrait.
+        rotateDisplay(mActivity.mDisplayContent, ROTATION_90);
+
+        // After we rotate, the activity should go in the size-compat mode and report the same
+        // configuration values.
+        assertScaled();
+        assertEquals(originalScreenWidthDp, mActivity.getConfiguration().smallestScreenWidthDp);
+        assertEquals(originalScreenWidthDp, mActivity.getConfiguration().screenWidthDp);
+        assertEquals(originalScreenHeighthDp, mActivity.getConfiguration().screenHeightDp);
+
+        // Restart activity
+        mActivity.restartProcessIfVisible();
+
+        // Now configuration should be updated
+        assertFitted();
+        assertNotEquals(originalScreenWidthDp, mActivity.getConfiguration().screenWidthDp);
+        assertNotEquals(originalScreenHeighthDp, mActivity.getConfiguration().screenHeightDp);
+        assertEquals(mActivity.getConfiguration().screenWidthDp,
+                mActivity.getConfiguration().smallestScreenWidthDp);
+    }
+
+    @Test
+    public void testComputeConfigResourceOverrides_resizableFixedOrientationActivity() {
+        // Set up a display in landscape and ignoring orientation request.
+        setUpDisplaySizeWithApp(2800, 1400);
+        mActivity.mDisplayContent.setIgnoreOrientationRequest(true /* ignoreOrientationRequest */);
+
+        // Portrait fixed app without max aspect.
+        prepareLimitedBounds(mActivity, SCREEN_ORIENTATION_PORTRAIT, false /* isUnresizable */);
+
+        final Rect activityBounds = new Rect(mActivity.getBounds());
+
+        int originalScreenWidthDp = mActivity.getConfiguration().screenWidthDp;
+        int originalScreenHeighthDp = mActivity.getConfiguration().screenHeightDp;
+
+        // App should launch in fixed orientation letterbox.
+        // Activity bounds should be 700x1400 with the ratio as the display.
+        assertTrue(mActivity.isLetterboxedForFixedOrientationAndAspectRatio());
+        assertFitted();
+        assertEquals(originalScreenWidthDp, mActivity.getConfiguration().smallestScreenWidthDp);
+        assertTrue(originalScreenWidthDp < originalScreenHeighthDp);
+
+        // Rotate display to portrait.
+        rotateDisplay(mActivity.mDisplayContent, ROTATION_90);
+
+        // Now configuration should be updated
+        assertFitted();
+        assertNotEquals(originalScreenWidthDp, mActivity.getConfiguration().screenWidthDp);
+        assertNotEquals(originalScreenHeighthDp, mActivity.getConfiguration().screenHeightDp);
+        assertEquals(mActivity.getConfiguration().screenWidthDp,
+                mActivity.getConfiguration().smallestScreenWidthDp);
+    }
+
+    @Test
+    public void testSplitAspectRatioForUnresizablePortraitApps() {
+        // Set up a display in landscape and ignoring orientation request.
+        int screenWidth = 1600;
+        int screenHeight = 1400;
+        setUpDisplaySizeWithApp(screenWidth, screenHeight);
+        mActivity.mDisplayContent.setIgnoreOrientationRequest(true /* ignoreOrientationRequest */);
+        mActivity.mWmService.mLetterboxConfiguration
+                        .setIsSplitScreenAspectRatioForUnresizableAppsEnabled(true);
+
+        mActivity.mWmService.mLetterboxConfiguration.setFixedOrientationLetterboxAspectRatio(1.1f);
+
+        prepareUnresizable(mActivity, SCREEN_ORIENTATION_PORTRAIT);
+
+        final Rect displayBounds = new Rect(mActivity.mDisplayContent.getBounds());
+        final Rect activityBounds = new Rect(mActivity.getBounds());
+
+        // App should launch in fixed orientation letterbox.
+        assertTrue(mActivity.isLetterboxedForFixedOrientationAndAspectRatio());
+        // Checking that there is no size compat mode.
+        assertFitted();
+
+        assertEquals(displayBounds.height(), activityBounds.height());
+        assertTrue(activityBounds.width() < displayBounds.width() / 2);
+
+        final TestSplitOrganizer organizer =
+                new TestSplitOrganizer(mAtm, mActivity.getDisplayContent());
+        // Move activity to split screen which takes half of the screen.
+        mTask.reparent(organizer.mPrimary, POSITION_TOP, /* moveParents= */ false , "test");
+        organizer.mPrimary.setBounds(0, 0, getExpectedSplitSize(screenWidth), screenHeight);
+        assertEquals(WINDOWING_MODE_MULTI_WINDOW, mTask.getWindowingMode());
+        assertEquals(WINDOWING_MODE_MULTI_WINDOW, mActivity.getWindowingMode());
+        // Checking that there is no size compat mode.
+        assertFitted();
+    }
+
+    @Test
+    public void testSplitAspectRatioForUnresizableLandscapeApps() {
+        // Set up a display in portrait and ignoring orientation request.
+        int screenWidth = 1400;
+        int screenHeight = 1600;
+        setUpDisplaySizeWithApp(screenWidth, screenHeight);
+        mActivity.mDisplayContent.setIgnoreOrientationRequest(true /* ignoreOrientationRequest */);
+        mActivity.mWmService.mLetterboxConfiguration
+                        .setIsSplitScreenAspectRatioForUnresizableAppsEnabled(true);
+
+        mActivity.mWmService.mLetterboxConfiguration.setFixedOrientationLetterboxAspectRatio(1.1f);
+
+        prepareUnresizable(mActivity, SCREEN_ORIENTATION_LANDSCAPE);
+
+        final Rect displayBounds = new Rect(mActivity.mDisplayContent.getBounds());
+        final Rect activityBounds = new Rect(mActivity.getBounds());
+
+        // App should launch in fixed orientation letterbox.
+        assertTrue(mActivity.isLetterboxedForFixedOrientationAndAspectRatio());
+        // Checking that there is no size compat mode.
+        assertFitted();
+
+        assertEquals(displayBounds.width(), activityBounds.width());
+        assertTrue(activityBounds.height() < displayBounds.height() / 2);
+
+        final TestSplitOrganizer organizer =
+                new TestSplitOrganizer(mAtm, mActivity.getDisplayContent());
+        // Move activity to split screen which takes half of the screen.
+        mTask.reparent(organizer.mPrimary, POSITION_TOP, /* moveParents= */ false , "test");
+        organizer.mPrimary.setBounds(0, 0, screenWidth, getExpectedSplitSize(screenHeight));
+        assertEquals(WINDOWING_MODE_MULTI_WINDOW, mTask.getWindowingMode());
+        assertEquals(WINDOWING_MODE_MULTI_WINDOW, mActivity.getWindowingMode());
+        // Checking that there is no size compat mode.
+        assertFitted();
+    }
+
+    @Test
     public void
             testDisplayIgnoreOrientationRequest_orientationLetterboxBecameSizeCompatAfterRotate() {
         // Set up a display in landscape and ignoring orientation request.
