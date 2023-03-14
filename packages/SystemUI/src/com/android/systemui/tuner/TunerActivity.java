@@ -32,6 +32,7 @@ import com.android.systemui.Dependency;
 import com.android.systemui.R;
 import com.android.systemui.demomode.DemoModeController;
 import com.android.systemui.fragments.FragmentService;
+import com.android.systemui.util.settings.GlobalSettings;
 
 import javax.inject.Inject;
 
@@ -45,12 +46,18 @@ public class TunerActivity extends CollapsingToolbarBaseActivity implements
 
     private final DemoModeController mDemoModeController;
     private final TunerService mTunerService;
+    private final GlobalSettings mGlobalSettings;
 
     @Inject
-    TunerActivity(DemoModeController demoModeController, TunerService tunerService) {
+    TunerActivity(
+            DemoModeController demoModeController,
+            TunerService tunerService,
+            GlobalSettings globalSettings
+    ) {
         super();
         mDemoModeController = demoModeController;
         mTunerService = tunerService;
+        mGlobalSettings = globalSettings;
     }
 
     protected void onCreate(Bundle savedInstanceState) {
