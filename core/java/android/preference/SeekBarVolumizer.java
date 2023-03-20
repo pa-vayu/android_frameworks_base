@@ -291,10 +291,6 @@ public class SeekBarVolumizer implements OnSeekBarChangeListener, Handler.Callba
         if (zenMuted) {
             mSeekBar.setProgress(mLastAudibleStreamVolume, true);
         } else if (mNotificationOrRing && mRingerMode == AudioManager.RINGER_MODE_VIBRATE) {
-<<<<<<< HEAD
-            mSeekBar.setProgress(0, true);
-            mSeekBar.setEnabled(isSeekBarEnabled());
-=======
             /**
              * the first variable above is preserved and the conditions below are made explicit
              * so that when user attempts to slide the notification seekbar out of vibrate the
@@ -304,7 +300,6 @@ public class SeekBarVolumizer implements OnSeekBarChangeListener, Handler.Callba
                     || (mStreamType == AudioManager.STREAM_NOTIFICATION && mMuted)) {
                 mSeekBar.setProgress(0, true);
             }
->>>>>>> e85c64c6acda0c00d6b231804a3429ff090664a1
         } else if (mMuted) {
             mSeekBar.setProgress(0, true);
         } else {
@@ -661,14 +656,8 @@ public class SeekBarVolumizer implements OnSeekBarChangeListener, Handler.Callba
         }
 
         private void updateVolumeSlider(int streamType, int streamValue) {
-<<<<<<< HEAD
-            final boolean streamMatch = mNotificationOrRing && isNotificationStreamLinked()
-                    ? isNotificationOrRing(streamType)
-                    : (streamType == mStreamType);
-=======
             final boolean streamMatch = mNotifAliasRing && mNotificationOrRing
                     ? isNotificationOrRing(streamType) : streamType == mStreamType;
->>>>>>> e85c64c6acda0c00d6b231804a3429ff090664a1
             if (mSeekBar != null && streamMatch && streamValue != -1) {
                 final boolean muted = mAudioManager.isStreamMute(mStreamType)
                         || streamValue == 0;

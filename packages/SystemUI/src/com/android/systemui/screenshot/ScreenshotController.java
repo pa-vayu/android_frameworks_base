@@ -871,8 +871,8 @@ public class ScreenshotController {
                         // TODO: Do this via ActionIntentExecutor instead.
                         mContext.sendBroadcast(new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS));
                     }
-            mLongScreenshotHolder.setForegroundAppName(getForegroundAppLabel());
             );
+            mLongScreenshotHolder.setForegroundAppName(getForegroundAppLabel());
 
             final Intent intent = new Intent(mContext, LongScreenshotActivity.class);
             intent.putExtra(LongScreenshotActivity.EXTRA_SCREENSHOT_USER_HANDLE,

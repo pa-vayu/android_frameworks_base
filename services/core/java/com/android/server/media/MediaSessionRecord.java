@@ -52,6 +52,8 @@ import android.os.Process;
 import android.os.RemoteException;
 import android.os.ResultReceiver;
 import android.os.SystemClock;
+import android.text.TextUtils;
+import android.util.EventLog;
 import android.util.Log;
 import android.view.KeyEvent;
 

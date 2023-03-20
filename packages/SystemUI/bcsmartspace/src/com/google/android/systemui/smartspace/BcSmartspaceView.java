@@ -450,6 +450,9 @@ public class BcSmartspaceView extends FrameLayout implements BcSmartspaceDataPlu
         this.mAdapter.setDnd(drawable, str);
     }
 
+    public void setUiSurface(String ui) {
+    } 
+
     public void setNextAlarm(Drawable drawable, String str) {
         this.mAdapter.setNextAlarm(drawable, str);
     }

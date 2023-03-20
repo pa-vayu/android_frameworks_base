@@ -159,11 +159,8 @@ import com.android.systemui.statusbar.StatusBarState;
 import com.android.systemui.statusbar.phone.KeyguardBypassController;
 import com.android.systemui.telephony.TelephonyListenerManager;
 import com.android.systemui.util.Assert;
-<<<<<<< HEAD
 import com.android.systemui.keyguard.KeyguardViewMediator;
-=======
 import com.android.systemui.util.settings.SecureSettings;
->>>>>>> e85c64c6acda0c00d6b231804a3429ff090664a1
 
 import com.google.android.collect.Lists;
 
@@ -2309,10 +2306,8 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener, Dumpab
         mContext.getContentResolver().registerContentObserver(
                 Settings.System.getUriFor(Settings.System.TIME_12_24),
                 false, mTimeFormatChangeObserver, UserHandle.USER_ALL);
-<<<<<<< HEAD
         mSettingsObserver = new SettingsObserver(mHandler);
         mSettingsObserver.observe();
-=======
 
         updateSfpsRequireScreenOnToAuthPref();
         mSfpsRequireScreenOnToAuthPrefObserver = new ContentObserver(mHandler) {
@@ -2352,7 +2347,6 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener, Dumpab
                 }
             }
         }
->>>>>>> e85c64c6acda0c00d6b231804a3429ff090664a1
     }
 
     private void updateFaceEnrolled(int userId) {
@@ -2699,12 +2693,11 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener, Dumpab
         final int user = getCurrentUser();
         final boolean userDoesNotHaveTrust = !getUserHasTrust(user);
         final boolean shouldListenForFingerprintAssistant = shouldListenForFingerprintAssistant();
-<<<<<<< HEAD
         final boolean shouldListenKeyguardState;
         if (!mFingerprintWakeAndUnlock) {
             shouldListenKeyguardState =
-                (mKeyguardIsVisible
-                        || mBouncerIsOrWillBeShowing
+                (isKeyguardVisible()
+                        || mPrimaryBouncerIsOrWillBeShowing
                         || shouldListenForFingerprintAssistant
                         || (mKeyguardOccluded && mIsDreaming))
                         && mDeviceInteractive && !mGoingToSleep && !mKeyguardGoingAway
@@ -2712,11 +2705,7 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener, Dumpab
                             && (mOccludingAppRequestingFp || isUdfps));
         } else {
             shouldListenKeyguardState =
-                mKeyguardIsVisible
-=======
-        final boolean shouldListenKeyguardState =
                 isKeyguardVisible()
->>>>>>> e85c64c6acda0c00d6b231804a3429ff090664a1
                         || !mDeviceInteractive
                         || (mPrimaryBouncerIsOrWillBeShowing && !mKeyguardGoingAway)
                         || mGoingToSleep
@@ -3725,16 +3714,8 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener, Dumpab
      * @return true if and only if the state has changed for the specified {@code slotId}
      */
     private boolean refreshSimState(int subId, int slotId) {
-<<<<<<< HEAD
-        final TelephonyManager tele =
-                (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
-        int state = (tele != null) ?
-                tele.getSimState(slotId) : TelephonyManager.SIM_STATE_UNKNOWN;
-        SimData data = mSimDatas.get(slotId);
-=======
         int state = mTelephonyManager.getSimState(slotId);
         SimData data = mSimDatas.get(subId);
->>>>>>> e85c64c6acda0c00d6b231804a3429ff090664a1
         final boolean changed;
         if (data == null) {
             data = new SimData(state, slotId, subId);
@@ -3963,14 +3944,13 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener, Dumpab
             mContext.getContentResolver().unregisterContentObserver(mTimeFormatChangeObserver);
         }
 
-<<<<<<< HEAD
         if (mSettingsObserver != null) {
             mSettingsObserver.unobserve();
-=======
+	}
+
         if (mSfpsRequireScreenOnToAuthPrefObserver != null) {
             mContext.getContentResolver().unregisterContentObserver(
                     mSfpsRequireScreenOnToAuthPrefObserver);
->>>>>>> e85c64c6acda0c00d6b231804a3429ff090664a1
         }
 
         try {

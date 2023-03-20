@@ -180,73 +180,31 @@ public class TelephonyIcons {
     //
     public static final MobileIconGroup FIVE_G = new MobileIconGroup(
             "5G",
-            null,
-            null,
-            AccessibilityContentDescriptions.PHONE_SIGNAL_STRENGTH,
-            0, 0,
-            0,
-            0,
-            AccessibilityContentDescriptions.PHONE_SIGNAL_STRENGTH[0],
             R.string.data_connection_5g,
             TelephonyIcons.ICON_5G);
 
     public static final MobileIconGroup FIVE_G_BASIC = new MobileIconGroup(
             "5GBasic",
-            null,
-            null,
-            AccessibilityContentDescriptions.PHONE_SIGNAL_STRENGTH,
-            0, 0,
-            0,
-            0,
-            AccessibilityContentDescriptions.PHONE_SIGNAL_STRENGTH[0],
             R.string.data_connection_5g_basic,
             TelephonyIcons.ICON_5G_BASIC);
 
     public static final MobileIconGroup FIVE_G_UWB = new MobileIconGroup(
             "5GUWB",
-            null,
-            null,
-            AccessibilityContentDescriptions.PHONE_SIGNAL_STRENGTH,
-            0, 0,
-            0,
-            0,
-            AccessibilityContentDescriptions.PHONE_SIGNAL_STRENGTH[0],
             R.string.data_connection_5g_uwb,
             TelephonyIcons.ICON_5G_UWB);
 
     public static final MobileIconGroup FIVE_G_SA = new MobileIconGroup(
             "5GSA",
-            null,
-            null,
-            AccessibilityContentDescriptions.PHONE_SIGNAL_STRENGTH,
-            0, 0,
-            0,
-            0,
-            AccessibilityContentDescriptions.PHONE_SIGNAL_STRENGTH[0],
             R.string.data_connection_5g_sa,
             TelephonyIcons.ICON_5G_SA);
 
     public static final MobileIconGroup VOWIFI = new MobileIconGroup(
             "VoWIFI",
-            null,
-            null,
-            AccessibilityContentDescriptions.PHONE_SIGNAL_STRENGTH,
-            0, 0,
-            0,
-            0,
-            AccessibilityContentDescriptions.PHONE_SIGNAL_STRENGTH[0],
             0,
             TelephonyIcons.ICON_VOWIFI);
 
     public static final MobileIconGroup VOWIFI_CALLING = new MobileIconGroup(
             "VoWIFICall",
-            null,
-            null,
-            AccessibilityContentDescriptions.PHONE_SIGNAL_STRENGTH,
-            0, 0,
-            0,
-            0,
-            AccessibilityContentDescriptions.PHONE_SIGNAL_STRENGTH[0],
             0,
             TelephonyIcons.ICON_VOWIFI_CALLING);
 

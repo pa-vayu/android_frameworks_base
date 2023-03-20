@@ -1334,6 +1334,7 @@ public class CommandQueue extends IStatusBar.Stub implements
             mHandler.removeMessages(MSG_TOGGLE_CAMERA_FLASH);
             mHandler.sendEmptyMessage(MSG_TOGGLE_CAMERA_FLASH);
         }
+    }
 
     @Override
     public void goToFullscreenFromSplit() {

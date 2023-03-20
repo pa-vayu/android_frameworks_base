@@ -651,9 +651,6 @@ public class StatusBarKeyguardViewManager implements RemoteInputController.Callb
                         } else {
                             mPrimaryBouncerInteractor.setDismissAction(mAfterKeyguardGoneAction,
                                     mKeyguardGoneCancelAction);
-                        } else {
-                            mBouncerInteractor.setDismissAction(mAfterKeyguardGoneAction,
-                                    mKeyguardGoneCancelAction);
                         }
                         mAfterKeyguardGoneAction = null;
                         mKeyguardGoneCancelAction = null;
