@@ -167,7 +167,7 @@ class ImageExporter {
      * @return a listenable future result
      */
     ListenableFuture<Result> export(Executor executor, UUID requestId, Bitmap bitmap,
-            ZonedDateTime captureTime, String foregroundAppName, UserHandle owner) {
+            ZonedDateTime captureTime, UserHandle owner, String foregroundAppName) {
 
         final Task task = new Task(mResolver, requestId, bitmap, captureTime, foregroundAppName, mCompressFormat,
                 mQuality, /* publish */ true, owner, mFlags);

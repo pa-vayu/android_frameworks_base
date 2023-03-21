@@ -331,15 +331,6 @@ public class NavigationBar extends ViewController<NavigationBarView> implements 
         }
 
         @Override
-        public void onQuickStepStarted() {
-            // Use navbar dragging as a signal to hide the rotate button
-            mView.getRotationButtonController().setRotateSuggestionButtonState(false);
-
-            // Hide the notifications panel when quick step starts
-            mShadeController.collapsePanel(true /* animate */);
-        }
-
-        @Override
         public void startAssistant(Bundle bundle) {
             mAssistManagerLazy.get().startAssist(bundle);
         }
@@ -739,7 +730,6 @@ public class NavigationBar extends ViewController<NavigationBarView> implements 
         mView.setUpdateActiveTouchRegionsCallback(null);
         getBarTransitions().destroy();
         mOverviewProxyService.removeCallback(mOverviewProxyListener);
-        mBroadcastDispatcher.unregisterReceiver(mBroadcastReceiver);
         mUserTracker.removeCallback(mUserChangedCallback);
         mWakefulnessLifecycle.removeObserver(mWakefulnessObserver);
         mView.getViewTreeObserver().removeOnComputeInternalInsetsListener(

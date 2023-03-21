@@ -25,6 +25,7 @@ import android.content.ComponentName;
 import android.content.res.Configuration;
 import android.content.res.Configuration.Orientation;
 import android.metrics.LogMaker;
+import android.util.Log;
 import android.view.View;
 
 import com.android.internal.annotations.VisibleForTesting;

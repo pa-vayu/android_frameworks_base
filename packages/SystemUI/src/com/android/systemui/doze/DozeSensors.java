@@ -169,7 +169,7 @@ public class DozeSensors {
         mSelectivelyRegisterProxSensors = dozeParameters.getSelectivelyRegisterSensorsUsingProx();
         mListeningProxSensors = !mSelectivelyRegisterProxSensors;
         mProxSensorSupported = resources.getBoolean(
-                R.bool.doze_proximity_sensor_supported);
+                com.android.systemui.R.bool.doze_proximity_sensor_supported);
         mScreenOffUdfpsEnabled =
                 config.screenOffUdfpsEnabled(KeyguardUpdateMonitor.getCurrentUser());
         mDevicePostureController = devicePostureController;

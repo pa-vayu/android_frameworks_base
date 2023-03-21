@@ -1,5 +1,6 @@
 package com.google.android.systemui.smartspace;
 
+import android.annotation.NonNull;
 import android.app.smartspace.SmartspaceAction;
 import android.app.smartspace.SmartspaceTarget;
 import android.content.ComponentName;
@@ -18,6 +19,7 @@ import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.NotificationMediaManager;
 import com.android.systemui.util.concurrency.DelayableExecutor;
 
+import java.util.concurrent.Executor;
 import javax.inject.Inject;
 
 import kotlin.Unit;
@@ -52,7 +54,8 @@ public final class KeyguardMediaViewController {
     private BcSmartspaceDataPlugin.SmartspaceView smartspaceView;
     private CharSequence title;
     private final DelayableExecutor uiExecutor;
-    private UserTracker userTracker;
+    private UserTracker mUserTracker;
+    private final Executor mMainExecutor = null;
 
     @Inject
     public KeyguardMediaViewController(
@@ -119,8 +122,7 @@ public final class KeyguardMediaViewController {
                         notificationMediaManager.removeCallback(keyguardMediaViewController);
                     }
                 });
-        userTracker = userTracker;
-	userTracker.addCallback(mUserChangedCallback, new HandlerExecutor(uiExecutor));
+	mUserTracker.addCallback(mUserChangedCallback, mMainExecutor);
     }
 
     public final void updateMediaInfo(MediaMetadata mediaMetadata, int i) {
@@ -153,7 +155,7 @@ public final class KeyguardMediaViewController {
                             .setSubtitle(artist)
                             .setIcon(mediaManager.getMediaIcon())
                             .build();
-            UserTracker userTracker = userTracker;
+            UserTracker userTracker = mUserTracker;
             if (userTracker == null) {
                 Intrinsics.throwUninitializedPropertyAccessException("userTracker");
                 throw null;

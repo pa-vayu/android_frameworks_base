@@ -165,10 +165,10 @@ public class CommandQueue extends IStatusBar.Stub implements
     private static final int MSG_REGISTER_NEARBY_MEDIA_DEVICE_PROVIDER = 66 << MSG_SHIFT;
     private static final int MSG_UNREGISTER_NEARBY_MEDIA_DEVICE_PROVIDER = 67 << MSG_SHIFT;
     private static final int MSG_TILE_SERVICE_REQUEST_LISTENING_STATE = 68 << MSG_SHIFT;
-    private static final int MSG_TOGGLE_CAMERA_FLASH = 69 << MSG_SHIFT;
     private static final int MSG_SHOW_REAR_DISPLAY_DIALOG = 69 << MSG_SHIFT;
     private static final int MSG_GO_TO_FULLSCREEN_FROM_SPLIT = 70 << MSG_SHIFT;
     private static final int MSG_ENTER_STAGE_SPLIT_FROM_RUNNING_APP = 71 << MSG_SHIFT;
+    private static final int MSG_TOGGLE_CAMERA_FLASH = 72 << MSG_SHIFT;
 
     public static final int FLAG_EXCLUDE_NONE = 0;
     public static final int FLAG_EXCLUDE_SEARCH_PANEL = 1 << 0;
@@ -1776,11 +1776,6 @@ public class CommandQueue extends IStatusBar.Stub implements
                         mCallbacks.get(i).requestTileServiceListeningState(component);
                     }
                     break;
-                case MSG_TOGGLE_CAMERA_FLASH:
-                    for (int i = 0; i < mCallbacks.size(); i++) {
-                        mCallbacks.get(i).toggleCameraFlash();
-                    }
-                    break;
                 case MSG_SHOW_REAR_DISPLAY_DIALOG:
                     for (int i = 0; i < mCallbacks.size(); i++) {
                         mCallbacks.get(i).showRearDisplayDialog((Integer) msg.obj);
@@ -1794,6 +1789,11 @@ public class CommandQueue extends IStatusBar.Stub implements
                 case MSG_ENTER_STAGE_SPLIT_FROM_RUNNING_APP:
                     for (int i = 0; i < mCallbacks.size(); i++) {
                         mCallbacks.get(i).enterStageSplitFromRunningApp((Boolean) msg.obj);
+                    }
+                    break;
+                case MSG_TOGGLE_CAMERA_FLASH:
+                    for (int i = 0; i < mCallbacks.size(); i++) {
+                        mCallbacks.get(i).toggleCameraFlash();
                     }
                     break;
             }

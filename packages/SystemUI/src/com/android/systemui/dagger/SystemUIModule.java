@@ -306,7 +306,7 @@ public abstract class SystemUIModule {
 
     @Provides
     @SysUISingleton
-    static KeyguardMediaViewController provideKeyguardMediaViewController(Context context, BcSmartspaceDataPlugin bcSmartspaceDataPlugin,
+    static KeyguardMediaViewController provideKeyguardMediaViewController(Executor sysuiMainExecutor, Context context, BcSmartspaceDataPlugin bcSmartspaceDataPlugin,
             @Main DelayableExecutor delayableExecutor, NotificationMediaManager notificationMediaManager, BroadcastDispatcher broadcastDispatcher) {
         return new KeyguardMediaViewController(context, bcSmartspaceDataPlugin, delayableExecutor, notificationMediaManager, broadcastDispatcher);
     }

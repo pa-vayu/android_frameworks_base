@@ -203,6 +203,7 @@ public class InternetDialogController implements AccessPointController.AccessPoi
     static final long SHORT_DURATION_TIMEOUT = 4000;
     @VisibleForTesting
     protected ActivityStarter mActivityStarter;
+    protected Map<Integer, NonDdsCallStateCallback> mNonDdsCallStateCallbacksMap;
     @VisibleForTesting
     protected SubscriptionManager.OnSubscriptionsChangedListener mOnSubscriptionsChangedListener;
     @VisibleForTesting
